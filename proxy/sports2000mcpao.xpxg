@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<WSAD xmlns="urn:schemas-progress-com:WSAD:0011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <AppObject>
+    <PGVersion>
+      <PXGVersion>03</PXGVersion>
+    </PGVersion>
+    <PGGenInfo isSessionFree="true">
+      <Author>Consultingwerk Application Modernization Solitions Ltd.</Author>
+      <VersionString>1.1</VersionString>
+      <VersionNumber>1</VersionNumber>
+      <Package />
+      <Service>sports2000mcpao</Service>
+      <WorkDir>C:\Work_STREAM\SmartComponentLibrary\sports2000demomcp\proxy\</WorkDir>
+      <VerboseLogging>true</VerboseLogging>
+      <LeaveProxyFiles>true</LeaveProxyFiles>
+      <SaveBeforeGen>true</SaveBeforeGen>
+      <DotNetClient>true</DotNetClient>
+      <JavaClient>false</JavaClient>
+      <WebServicesClient>false</WebServicesClient>
+      <ESBClient2>false</ESBClient2>
+      <RESTClient>false</RESTClient>
+      <UserDefinedAppService>false</UserDefinedAppService>
+      <JavaCompilerType>3</JavaCompilerType>
+      <JavaCompiler>C:\Progress\OpenJDK17U-jdk_x64_windows_hotspot_17.0.4_8\jdk-17.0.4+8\bin\javac.exe</JavaCompiler>
+      <JavaSwitches />
+      <JavaClasspathSwitch>-classpath</JavaClasspathSwitch>
+      <JavaClasspath>&lt;Proxy Dir&gt;;&lt;Install Dir&gt;\java\o4glrt.jar;&lt;Install Dir&gt;\java\messages.jar;&lt;Default classes.zip&gt;</JavaClasspath>
+      <DotNetCompilerType>4</DotNetCompilerType>
+      <DotNetSwitches />
+      <DotNetXSDGenerator>xsd</DotNetXSDGenerator>
+      <DotNetNamespace>Consultingwerk.Sports2000Proxy</DotNetNamespace>
+      <DotNetTitle>Sports2000Proxy</DotNetTitle>
+      <DotNetVersion>1.0</DotNetVersion>
+      <DotNetDesc>Proxy for the Sports2000 Demo MCP Server</DotNetDesc>
+      <DotNetCompany>Consultingwerk Application Modernization Solitions Ltd.</DotNetCompany>
+      <DotNetProduct>Sports2000</DotNetProduct>
+      <DotNetPublicKey />
+      <DotNetDelaySign>false</DotNetDelaySign>
+      <DotNetRuntime>digitally signed</DotNetRuntime>
+      <DotNetDataSetNamespace>Consultingwerk.Sports2000Proxy.StrongTypesNS</DotNetDataSetNamespace>
+      <DNUseDefaultDSNamespace>true</DNUseDefaultDSNamespace>
+      <DNUseNamespaceAsDirs>true</DNUseNamespaceAsDirs>
+      <DotNetUseNullableTypes>true</DotNetUseNullableTypes>
+    </PGGenInfo>
+    <DeploymentWizard>
+      <CurrentEncoding>3</CurrentEncoding>
+      <SoapEndpointURL>http://www.tempuri.org/wsa/wsa1</SoapEndpointURL>
+      <WebServiceNamespace userDefined="true">urn:tempuri-org</WebServiceNamespace>
+      <SoapAction appendToSoapAction="false" />
+      <ConnectReturnString userDefined="false" />
+      <TestWSDL bGen="true" RPCEncoded="false" RPCLiteral="false" DocLiteral="true" />
+      <ESBEncoding>3</ESBEncoding>
+      <SonicAppService useFileSystem="false" deployToDS="false" createXAR="false">
+        <ResourceDirectory overWrite="false" />
+        <XARName />
+      </SonicAppService>
+      <SonicConnectionInfo>
+        <SonicURL>tcp://localhost:2506</SonicURL>
+        <SonicDomain>Domain1</SonicDomain>
+        <User>Administrator</User>
+        <Password />
+      </SonicConnectionInfo>
+    </DeploymentWizard>
+    <Name>sports2000mcpao</Name>
+    <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
+    <HelpString />
+    <ODLHelpString />
+    <ObjectType>false</ObjectType>
+    <AllowUnknown>false</AllowUnknown>
+    <IsTTResultSet>false</IsTTResultSet>
+    <WriteDatasetBeforeImage>false</WriteDatasetBeforeImage>
+    <Procedure isPersistent="false" useFullName="false">
+      <Name>get-customer-details</Name>
+      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
+      <ProcExt>p</ProcExt>
+      <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
+        <Name>GetCustomerDetails</Name>
+        <HelpString />
+        <Parameter allowUnknown="false" ordinal="1" writeXmlBeforeImage="false">
+          <Name>pcAuthKey</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="2" writeXmlBeforeImage="false">
+          <Name>piCustNum</Name>
+          <Type>4</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="3" writeXmlBeforeImage="false">
+          <Name>pcName</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="4" writeXmlBeforeImage="false">
+          <Name>pcResponse</Name>
+          <Type>39</Type>
+          <Mode>2</Mode>
+        </Parameter>
+      </ProcDetail>
+    </Procedure>
+    <Procedure isPersistent="false" useFullName="false">
+      <Name>update-customer-details</Name>
+      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
+      <ProcExt>p</ProcExt>
+      <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
+        <Name>UpdateCustomerDetails</Name>
+        <HelpString />
+        <Parameter allowUnknown="false" ordinal="1" writeXmlBeforeImage="false">
+          <Name>pcAuthKey</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="2" writeXmlBeforeImage="false">
+          <Name>piCustNum</Name>
+          <Type>4</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="3" writeXmlBeforeImage="false">
+          <Name>pcName</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="4" writeXmlBeforeImage="false">
+          <Name>pcAddress</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="5" writeXmlBeforeImage="false">
+          <Name>pcAddress2</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="6" writeXmlBeforeImage="false">
+          <Name>pcCity</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="7" writeXmlBeforeImage="false">
+          <Name>pcState</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="8" writeXmlBeforeImage="false">
+          <Name>pcPostalCode</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="9" writeXmlBeforeImage="false">
+          <Name>pcCountry</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="10" writeXmlBeforeImage="false">
+          <Name>pcPhone</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="11" writeXmlBeforeImage="false">
+          <Name>pcEmailAddress</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="12" writeXmlBeforeImage="false">
+          <Name>pcResponse</Name>
+          <Type>39</Type>
+          <Mode>2</Mode>
+        </Parameter>
+      </ProcDetail>
+    </Procedure>
+  </AppObject>
+</WSAD>
