@@ -5,6 +5,8 @@ using Progress.Open4GL.Proxy;
 using sports2000mcpserver;
 using System;
 using System.ComponentModel;
+using System.Net;
+using System.Net.NetworkInformation;
 
 /// <summary>
 /// Sample MCP tools for demonstration purposes.
@@ -41,5 +43,54 @@ public class Sports2000CustomerTools
             return ex.Message;
         }
     }
+
+
+    [McpServerTool]
+    [Description("Updates fields of a customer record (Name, Address, City, Country, CreditLimit, Ballance, Salesrep) only provide values for the fields that the user instructs you to change")]
+    public string UpdateCustomerDetails(
+        [Description("Customer Number (optional)")] int piCustNum = 0,
+        [Description("The updated value for the Customer Name filter (optional)")] string pcName = "",
+        [Description("The updated value for the address (street) (optional)")] string pcAddress = "",
+        [Description("The updated value for the address (street) (optional)")] string pcAddress2 = "",
+        [Description("The updated value for the City (optional)")] string pcCity = "",
+        [Description("The updated value for the State (optional)")] string pcState = "",
+        [Description("The updated value for the Postal Code (optional)")] string pcPostalCode = "",
+        [Description("The updated value for the Country (optional)")] string pcCountry = "",
+        [Description("The updated value for the Phone (optional)")] string pcPhone = "",
+        [Description("The updated value for the Email address(optional)")] string pcEmailAddress = ""
+        )
+    {
+        try
+        {
+            string connectionStr = Configuration.ConnectionString;
+
+            Connection m_Conn = new Connection(connectionStr, "", "", "");
+            m_Conn.SessionModel = 1;
+
+            sports2000mcpao appserver = new sports2000mcpao(m_Conn);
+
+            appserver.UpdateCustomerDetails(Configuration.AuthKey,
+                                            piCustNum,
+                                            pcName,
+                                            pcAddress,
+                                            pcAddress2,
+                                            pcCity,
+                                            pcState ,
+                                            pcPostalCode,
+                                            pcCountry,
+                                            pcPhone,
+                                            pcEmailAddress,
+                                            out string response);
+                
+            appserver.Dispose();
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }
+
 
 }
