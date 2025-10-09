@@ -11,8 +11,8 @@
         "dependencies": {
           "NETStandard.Library": "2.0.3",
           "System.Configuration.ConfigurationManager": "4.7.0",
-          "Progress.Messages": "12.8.7.1245",
-          "Progress.o4glrt": "12.8.7.1245"
+          "Progress.Messages": "12.8.9.1254",
+          "Progress.o4glrt": "12.8.9.1254"
         },
         "runtime": {
           "sports2000mcpao.dll": {}
@@ -114,19 +114,19 @@
           }
         }
       },
-      "Progress.Messages/12.8.7.1245": {
+      "Progress.Messages/12.8.9.1254": {
         "runtime": {
           "Progress.Messages.dll": {
-            "assemblyVersion": "12.8.7.1245",
-            "fileVersion": "12.8.7.1245"
+            "assemblyVersion": "12.8.9.1254",
+            "fileVersion": "12.8.9.1254"
           }
         }
       },
-      "Progress.o4glrt/12.8.7.1245": {
+      "Progress.o4glrt/12.8.9.1254": {
         "runtime": {
           "Progress.o4glrt.dll": {
-            "assemblyVersion": "12.8.7.1245",
-            "fileVersion": "12.8.7.1245"
+            "assemblyVersion": "12.8.9.1254",
+            "fileVersion": "12.8.9.1254"
           }
         }
       }
@@ -215,12 +215,12 @@
       "path": "system.security.principal.windows/4.7.0",
       "hashPath": "system.security.principal.windows.4.7.0.nupkg.sha512"
     },
-    "Progress.Messages/12.8.7.1245": {
+    "Progress.Messages/12.8.9.1254": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Progress.o4glrt/12.8.7.1245": {
+    "Progress.o4glrt/12.8.9.1254": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

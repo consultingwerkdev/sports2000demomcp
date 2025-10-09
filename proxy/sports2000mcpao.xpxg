@@ -30,7 +30,7 @@
       <DotNetXSDGenerator>xsd</DotNetXSDGenerator>
       <DotNetNamespace>Consultingwerk.Sports2000Proxy</DotNetNamespace>
       <DotNetTitle>Sports2000Proxy</DotNetTitle>
-      <DotNetVersion>1.1</DotNetVersion>
+      <DotNetVersion>1.2</DotNetVersion>
       <DotNetDesc>Proxy for the Sports2000 Demo MCP Server</DotNetDesc>
       <DotNetCompany>Consultingwerk Application Modernization Solitions Ltd.</DotNetCompany>
       <DotNetProduct>Sports2000</DotNetProduct>
@@ -100,6 +100,36 @@
       </ProcDetail>
     </Procedure>
     <Procedure isPersistent="false" useFullName="false">
+      <Name>open_customer_form</Name>
+      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
+      <ProcExt>p</ProcExt>
+      <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
+        <Name>OpenCustomerForm</Name>
+        <HelpString />
+        <Parameter allowUnknown="false" ordinal="1" writeXmlBeforeImage="false">
+          <Name>pcAuthKey</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="2" writeXmlBeforeImage="false">
+          <Name>piCustNum</Name>
+          <Type>4</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="3" writeXmlBeforeImage="false">
+          <Name>pcName</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="4" writeXmlBeforeImage="false">
+          <Name>pcResponse</Name>
+          <Type>39</Type>
+          <Mode>2</Mode>
+        </Parameter>
+      </ProcDetail>
+    </Procedure>
+    <Procedure isPersistent="false" useFullName="false">
       <Name>query-customers</Name>
       <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
       <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
@@ -109,16 +139,19 @@
         <HelpString />
         <Parameter allowUnknown="false" ordinal="1" writeXmlBeforeImage="false">
           <Name>pcAuthKey</Name>
+          <OrigName>pcAuthKey</OrigName>
           <Type>1</Type>
           <Mode>1</Mode>
         </Parameter>
         <Parameter allowUnknown="false" ordinal="2" writeXmlBeforeImage="false">
           <Name>pcQueryString</Name>
+          <OrigName>pcQueryString</OrigName>
           <Type>1</Type>
           <Mode>1</Mode>
         </Parameter>
         <Parameter allowUnknown="false" ordinal="3" writeXmlBeforeImage="false">
           <Name>pcResponse</Name>
+          <OrigName>pcResponse</OrigName>
           <Type>39</Type>
           <Mode>2</Mode>
         </Parameter>
