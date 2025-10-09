@@ -45,6 +45,36 @@ public class Sports2000CustomerTools
     }
 
     [McpServerTool]
+    [Description("Opens a Customer Form in the Browser web application, either based on the Customer Number (CustNum) or the customer name. When multiple customers are found using the customer name, a list is returned instead of opening the form directly")]
+    public string OpenCustomerForm(
+        [Description("Customer Number (optional)")] int piCustNum = 0,
+        [Description("Customer Name filter (optional)")] string pcName = "")
+    {
+        try
+        {
+            string connectionStr = Configuration.ConnectionString;
+
+            Connection m_Conn = new Connection(connectionStr, "", "", "");
+            m_Conn.SessionModel = 1;
+
+            sports2000mcpao appserver = new sports2000mcpao(m_Conn);
+
+            appserver.OpenCustomerForm(Configuration.AuthKey,
+                                       piCustNum,
+                                       pcName,
+                                       out string response);
+
+            appserver.Dispose();
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }
+
+    [McpServerTool]
     [Description("Queries/searches customers based on an OpenEdge ABL Query string (FOR EACH) for the eCustomer table. Fields of the table are: CustNum (integer), Country (character), Name (character), Address (character), Address2 (character), City (character), State (character), PostalCode (character), Contact (character), Phone (character), SalesRep (character), CreditLimit (decimal), Balance (decimal), Terms (character), Discount (integer), Comments (character), Fax (character), EmailAddress (character)")]
     public string QueryCustomers(
         [Description("The OpenEdge ABL Query string for the eCustomer table (mandatory)")] string pcQueryString = "")
