@@ -30,7 +30,7 @@
       <DotNetXSDGenerator>xsd</DotNetXSDGenerator>
       <DotNetNamespace>Consultingwerk.Sports2000Proxy</DotNetNamespace>
       <DotNetTitle>Sports2000Proxy</DotNetTitle>
-      <DotNetVersion>1.2</DotNetVersion>
+      <DotNetVersion>1.3</DotNetVersion>
       <DotNetDesc>Proxy for the Sports2000 Demo MCP Server</DotNetDesc>
       <DotNetCompany>Consultingwerk Application Modernization Solitions Ltd.</DotNetCompany>
       <DotNetProduct>Sports2000</DotNetProduct>

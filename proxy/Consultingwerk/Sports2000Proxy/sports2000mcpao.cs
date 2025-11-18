@@ -1,7 +1,7 @@
 
 /*
 **
-**    Created by PROGRESS ProxyGen (Progress Version 12.8) Thu Oct 09 11:57:46 CEST 2025
+**    Created by PROGRESS ProxyGen (Progress Version 12.8) Tue Nov 18 05:45:45 CET 2025
 **
 */
 
@@ -146,26 +146,27 @@ namespace Consultingwerk.Sports2000Proxy
         /// <summary>
 	/// 
 	/// </summary> 
-	public string GetCustomerDetails(string pcAuthKey, int piCustNum, string pcName, out string pcResponse)
+	public string GetCustomerDetails(string pcAuthKey, string pcJwtToken, int piCustNum, string pcName, out string pcResponse)
 	{
 		RqContext rqCtx = null;
 		if (isSessionAvailable() == false)
 			throw new Open4GLException(NotAvailable);
 
 		Object outValue;
-		ParameterSet parms = new ParameterSet(4);
+		ParameterSet parms = new ParameterSet(5);
 
 		// Set up input parameters
 		parms.setStringParameter(1, pcAuthKey, ParameterSet.INPUT);
-		parms.setIntegerParameter(2, piCustNum, ParameterSet.INPUT);
-		parms.setStringParameter(3, pcName, ParameterSet.INPUT);
+		parms.setStringParameter(2, pcJwtToken, ParameterSet.INPUT);
+		parms.setIntegerParameter(3, piCustNum, ParameterSet.INPUT);
+		parms.setStringParameter(4, pcName, ParameterSet.INPUT);
 
 
 		// Set up input/output parameters
 
 
 		// Set up Out parameters
-		parms.setLongCharParameter(4, null, ParameterSet.OUTPUT);
+		parms.setLongCharParameter(5, null, ParameterSet.OUTPUT);
 
 
 		// Setup local MetaSchema if any params are tables
@@ -180,7 +181,7 @@ namespace Consultingwerk.Sports2000Proxy
 
 
 		// Get output parameters
-		outValue = parms.getOutputParameter(4);
+		outValue = parms.getOutputParameter(5);
 		pcResponse = (string)outValue;
 
 
@@ -195,7 +196,57 @@ namespace Consultingwerk.Sports2000Proxy
 /// <summary>
 	/// 
 	/// </summary> 
-	public string OpenCustomerForm(string pcAuthKey, int piCustNum, string pcName, out string pcResponse)
+	public string OpenCustomerForm(string pcAuthKey, string pcJwtToken, int piCustNum, string pcName, out string pcResponse)
+	{
+		RqContext rqCtx = null;
+		if (isSessionAvailable() == false)
+			throw new Open4GLException(NotAvailable);
+
+		Object outValue;
+		ParameterSet parms = new ParameterSet(5);
+
+		// Set up input parameters
+		parms.setStringParameter(1, pcAuthKey, ParameterSet.INPUT);
+		parms.setStringParameter(2, pcJwtToken, ParameterSet.INPUT);
+		parms.setIntegerParameter(3, piCustNum, ParameterSet.INPUT);
+		parms.setStringParameter(4, pcName, ParameterSet.INPUT);
+
+
+		// Set up input/output parameters
+
+
+		// Set up Out parameters
+		parms.setLongCharParameter(5, null, ParameterSet.OUTPUT);
+
+
+		// Setup local MetaSchema if any params are tables
+
+
+
+		// Set up return type
+		
+
+		// Run procedure
+		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/open_customer_form.p", parms);
+
+
+		// Get output parameters
+		outValue = parms.getOutputParameter(5);
+		pcResponse = (string)outValue;
+
+
+		if (rqCtx != null) rqCtx.Release();
+
+
+		// Return output value
+		return (string)(parms.ProcedureReturnValue);
+
+	}
+
+/// <summary>
+	/// 
+	/// </summary> 
+	public string QueryCustomers(string pcAuthKey, string pcJwtToken, string pcQueryString, out string pcResponse)
 	{
 		RqContext rqCtx = null;
 		if (isSessionAvailable() == false)
@@ -206,8 +257,8 @@ namespace Consultingwerk.Sports2000Proxy
 
 		// Set up input parameters
 		parms.setStringParameter(1, pcAuthKey, ParameterSet.INPUT);
-		parms.setIntegerParameter(2, piCustNum, ParameterSet.INPUT);
-		parms.setStringParameter(3, pcName, ParameterSet.INPUT);
+		parms.setStringParameter(2, pcJwtToken, ParameterSet.INPUT);
+		parms.setStringParameter(3, pcQueryString, ParameterSet.INPUT);
 
 
 		// Set up input/output parameters
@@ -225,7 +276,7 @@ namespace Consultingwerk.Sports2000Proxy
 		
 
 		// Run procedure
-		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/open_customer_form.p", parms);
+		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/query-customers.p", parms);
 
 
 		// Get output parameters
@@ -244,84 +295,37 @@ namespace Consultingwerk.Sports2000Proxy
 /// <summary>
 	/// 
 	/// </summary> 
-	public string QueryCustomers(string pcAuthKey, string pcQueryString, out string pcResponse)
+	public string UpdateCustomerDetails(string pcAuthKey, string pcJwtToken, int piCustNum, string pcName, string pcAddress, 
+string pcAddress2, string pcCity, string pcState, string pcPostalCode, string pcCountry, 
+string pcPhone, string pcEmailAddress, out string pcResponse)
 	{
 		RqContext rqCtx = null;
 		if (isSessionAvailable() == false)
 			throw new Open4GLException(NotAvailable);
 
 		Object outValue;
-		ParameterSet parms = new ParameterSet(3);
+		ParameterSet parms = new ParameterSet(13);
 
 		// Set up input parameters
 		parms.setStringParameter(1, pcAuthKey, ParameterSet.INPUT);
-		parms.setStringParameter(2, pcQueryString, ParameterSet.INPUT);
+		parms.setStringParameter(2, pcJwtToken, ParameterSet.INPUT);
+		parms.setIntegerParameter(3, piCustNum, ParameterSet.INPUT);
+		parms.setStringParameter(4, pcName, ParameterSet.INPUT);
+		parms.setStringParameter(5, pcAddress, ParameterSet.INPUT);
+		parms.setStringParameter(6, pcAddress2, ParameterSet.INPUT);
+		parms.setStringParameter(7, pcCity, ParameterSet.INPUT);
+		parms.setStringParameter(8, pcState, ParameterSet.INPUT);
+		parms.setStringParameter(9, pcPostalCode, ParameterSet.INPUT);
+		parms.setStringParameter(10, pcCountry, ParameterSet.INPUT);
+		parms.setStringParameter(11, pcPhone, ParameterSet.INPUT);
+		parms.setStringParameter(12, pcEmailAddress, ParameterSet.INPUT);
 
 
 		// Set up input/output parameters
 
 
 		// Set up Out parameters
-		parms.setLongCharParameter(3, null, ParameterSet.OUTPUT);
-
-
-		// Setup local MetaSchema if any params are tables
-
-
-
-		// Set up return type
-		
-
-		// Run procedure
-		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/query-customers.p", parms);
-
-
-		// Get output parameters
-		outValue = parms.getOutputParameter(3);
-		pcResponse = (string)outValue;
-
-
-		if (rqCtx != null) rqCtx.Release();
-
-
-		// Return output value
-		return (string)(parms.ProcedureReturnValue);
-
-	}
-
-/// <summary>
-	/// 
-	/// </summary> 
-	public string UpdateCustomerDetails(string pcAuthKey, int piCustNum, string pcName, string pcAddress, string pcAddress2, 
-string pcCity, string pcState, string pcPostalCode, string pcCountry, string pcPhone, 
-string pcEmailAddress, out string pcResponse)
-	{
-		RqContext rqCtx = null;
-		if (isSessionAvailable() == false)
-			throw new Open4GLException(NotAvailable);
-
-		Object outValue;
-		ParameterSet parms = new ParameterSet(12);
-
-		// Set up input parameters
-		parms.setStringParameter(1, pcAuthKey, ParameterSet.INPUT);
-		parms.setIntegerParameter(2, piCustNum, ParameterSet.INPUT);
-		parms.setStringParameter(3, pcName, ParameterSet.INPUT);
-		parms.setStringParameter(4, pcAddress, ParameterSet.INPUT);
-		parms.setStringParameter(5, pcAddress2, ParameterSet.INPUT);
-		parms.setStringParameter(6, pcCity, ParameterSet.INPUT);
-		parms.setStringParameter(7, pcState, ParameterSet.INPUT);
-		parms.setStringParameter(8, pcPostalCode, ParameterSet.INPUT);
-		parms.setStringParameter(9, pcCountry, ParameterSet.INPUT);
-		parms.setStringParameter(10, pcPhone, ParameterSet.INPUT);
-		parms.setStringParameter(11, pcEmailAddress, ParameterSet.INPUT);
-
-
-		// Set up input/output parameters
-
-
-		// Set up Out parameters
-		parms.setLongCharParameter(12, null, ParameterSet.OUTPUT);
+		parms.setLongCharParameter(13, null, ParameterSet.OUTPUT);
 
 
 		// Setup local MetaSchema if any params are tables
@@ -336,7 +340,7 @@ string pcEmailAddress, out string pcResponse)
 
 
 		// Get output parameters
-		outValue = parms.getOutputParameter(12);
+		outValue = parms.getOutputParameter(13);
 		pcResponse = (string)outValue;
 
 
