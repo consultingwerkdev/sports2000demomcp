@@ -30,6 +30,7 @@ public class Sports2000CustomerTools
             sports2000mcpao appserver = new sports2000mcpao(m_Conn);
 
             appserver.GetCustomerDetails(Configuration.AuthKey,
+                                         "" /* pcJwtToken */,
                                          piCustNum,
                                          pcName,
                                          out string response);
@@ -60,6 +61,7 @@ public class Sports2000CustomerTools
             sports2000mcpao appserver = new sports2000mcpao(m_Conn);
 
             appserver.OpenCustomerForm(Configuration.AuthKey,
+                                       "" /* pcJwtToken */, 
                                        piCustNum,
                                        pcName,
                                        out string response);
@@ -89,6 +91,7 @@ public class Sports2000CustomerTools
             sports2000mcpao appserver = new sports2000mcpao(m_Conn);
 
             appserver.QueryCustomers (Configuration.AuthKey,
+                                      "" /* pcJwtToken */, 
                                       pcQueryString,
                                       out string response);
 
@@ -127,6 +130,7 @@ public class Sports2000CustomerTools
             sports2000mcpao appserver = new sports2000mcpao(m_Conn);
 
             appserver.UpdateCustomerDetails(Configuration.AuthKey,
+                                            "" /* pcJwtToken */,
                                             piCustNum,
                                             pcName,
                                             pcAddress,
