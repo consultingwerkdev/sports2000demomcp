@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Consultingwerk.SmartMCPAuthentication
+namespace Consultingwerk.SmartMcpAuthentication
 {
     /// <summary>
     /// Extension methods for configuring MCP OAuth2 authentication.

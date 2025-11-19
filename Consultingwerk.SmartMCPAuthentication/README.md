@@ -1,6 +1,6 @@
 # Keycloak Setup Guide for MCP OAuth2 Authentication
 
-This guide provides step-by-step instructions for configuring Keycloak to work with the SmartMCPAuthentication library.
+This guide provides step-by-step instructions for configuring Keycloak to work with the SmartMcpAuthentication library.
 
 ## Prerequisites
 
@@ -62,7 +62,7 @@ If you need user authentication:
 
 ## Step 5: Configure OAuth2 Settings
 
-The SmartMCPAuthentication library uses .NET's configuration system, which supports multiple sources including `appsettings.json` and environment variables.
+The SmartMcpAuthentication library uses .NET's configuration system, which supports multiple sources including `appsettings.json` and environment variables.
 
 ### Option A: Using appsettings.json
 
@@ -159,7 +159,7 @@ All subsequent MCP requests **require** the JWT token:
 The JWT token must be sent in the `Authorization: Bearer <token>` header.
 
 ### 5. Token Propagation to Backend
-The SmartMCPAuthentication library:
+The SmartMcpAuthentication library:
 - Extracts and validates the JWT token from the request
 - Stores it in the HTTP context for use by tool methods
 - Tool methods can access it via `ISmartMcpAccessTokenProvider` (dependency injection)
@@ -299,7 +299,7 @@ This will ensure tokens include the `aud` claim with your client ID.
 
 ## Support for Other OAuth2 Providers
 
-While this guide focuses on Keycloak, the SmartMCPAuthentication library is designed to work with any OAuth2 provider that supports:
+While this guide focuses on Keycloak, the SmartMcpAuthentication library is designed to work with any OAuth2 provider that supports:
 
 - Authorization Code flow
 - JWKS endpoint for token validation (RFC 7517)

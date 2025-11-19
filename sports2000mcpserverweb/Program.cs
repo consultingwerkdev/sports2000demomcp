@@ -1,4 +1,4 @@
-using Consultingwerk.SmartMCPAuthentication;
+using Consultingwerk.SmartMcpAuthentication;
 using sports2000mcpserver;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,4 +1,4 @@
-namespace Consultingwerk.SmartMCPAuthentication
+namespace Consultingwerk.SmartMcpAuthentication
 {
     /// <summary>
     /// Constants used throughout the SmartMCP Authentication library.
@@ -13,7 +13,7 @@ namespace Consultingwerk.SmartMCPAuthentication
         /// <summary>
         /// The logger category name.
         /// </summary>
-        public const string LoggerCategory = "SmartMCPAuthentication";
+        public const string LoggerCategory = "SmartMcpAuthentication";
 
         /// <summary>
         /// Endpoint paths.

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace Consultingwerk.SmartMCPAuthentication
+namespace Consultingwerk.SmartMcpAuthentication
 {
     /// <summary>
     /// Defines a provider for retrieving the current user's access token.

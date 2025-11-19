@@ -91,7 +91,7 @@ The following environment variables can be set:
 - `SMARTFRAMEWORKMCP_PASOE_URL`: PASOE server URL (default: `https://sfrbo.consultingwerkcloud.com:8821/apsv`)
 - `SMARTFRAMEWORKMCP_AUTH_KEY`: Authentication key for PASOE communication
 
-OAuth2 configuration is managed through the `SmartMcpOAuth2` configuration section. See the [Consultingwerk.SmartMCPAuthentication docdumentation](Consultingwerk.SmartMCPAuthentication/README.md) for detailed OAuth2 configuration instructions.
+OAuth2 configuration is managed through the `SmartMcpOAuth2` configuration section. See the [Consultingwerk.SmartMcpAuthentication documentation](Consultingwerk.SmartMcpAuthentication/README.md) for detailed OAuth2 configuration instructions.
 
 #### appsettings.json Example
 
@@ -117,8 +117,6 @@ The web server supports OAuth2 authentication via Keycloak. When enabled, most M
 **Important**: The following endpoints are publicly accessible (no authentication required):
 - `initialize` request (for OAuth2 discovery)
 - `/.well-known/*` endpoints (OAuth2/OIDC metadata)
-
-For detailed setup instructions, including Keycloak configuration, see the [Keycloak Setup Guide](Consultingwerk.SmartMCPAuthentication/README.md).
 
 ### Connecting with MCP Clients
 

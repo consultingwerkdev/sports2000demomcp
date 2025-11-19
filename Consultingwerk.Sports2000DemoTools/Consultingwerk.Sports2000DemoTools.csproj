@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Consultingwerk.SmartMCPAuthentication\Consultingwerk.SmartMCPAuthentication.csproj" />
+    <ProjectReference Include="..\Consultingwerk.SmartMcpAuthentication\Consultingwerk.SmartMcpAuthentication.csproj" />
   </ItemGroup>
 
   <ItemGroup>

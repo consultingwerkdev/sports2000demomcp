@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using System.Text.Json;
 
-namespace Consultingwerk.SmartMCPAuthentication
+namespace Consultingwerk.SmartMcpAuthentication
 {
     /// <summary>
     /// Provides OAuth2 metadata and discovery endpoints for the MCP server.

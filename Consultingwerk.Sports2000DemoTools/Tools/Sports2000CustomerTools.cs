@@ -1,4 +1,4 @@
-using Consultingwerk.SmartMCPAuthentication;
+using Consultingwerk.SmartMcpAuthentication;
 using Consultingwerk.Sports2000Proxy;
 using ModelContextProtocol.Server;
 using Progress.Open4GL.Proxy;

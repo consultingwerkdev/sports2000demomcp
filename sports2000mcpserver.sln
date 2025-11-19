@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Consultingwerk.Sports2000De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sports2000mcpserverweb", "sports2000mcpserverweb\sports2000mcpserverweb.csproj", "{EFAB6ED5-BB76-63D2-E92C-6E466D43840B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Consultingwerk.SmartMCPAuthentication", "Consultingwerk.SmartMCPAuthentication\Consultingwerk.SmartMCPAuthentication.csproj", "{E066E8E4-61D4-4B31-B90A-1EFD96440D65}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Consultingwerk.SmartMcpAuthentication", "Consultingwerk.SmartMcpAuthentication\Consultingwerk.SmartMcpAuthentication.csproj", "{E066E8E4-61D4-4B31-B90A-1EFD96440D65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

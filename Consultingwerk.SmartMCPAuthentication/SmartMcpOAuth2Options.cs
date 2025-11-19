@@ -1,4 +1,4 @@
-namespace Consultingwerk.SmartMCPAuthentication
+namespace Consultingwerk.SmartMcpAuthentication
 {
     /// <summary>
     /// Configuration options for MCP OAuth2 authentication.
