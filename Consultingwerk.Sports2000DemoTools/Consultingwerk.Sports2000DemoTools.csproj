@@ -9,6 +9,11 @@
   <ItemGroup>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.0" />
     <PackageReference Include="ModelContextProtocol" Version="0.4.0-preview.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Consultingwerk.SmartMCPAuthentication\Consultingwerk.SmartMCPAuthentication.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Consultingwerk.Sports2000DemoTools\Consultingwerk.Sports2000DemoTools.csproj" />
+    <ProjectReference Include="..\Consultingwerk.SmartMCPAuthentication\Consultingwerk.SmartMCPAuthentication.csproj" />
   </ItemGroup>
 
 </Project>
