@@ -11,7 +11,7 @@ using System.ComponentModel;
 /// </summary>
 public class Sports2000CustomerTools
 {
-    private readonly ISmartMcpAccessTokenProvider _tokenProvider;
+    private readonly ISmartMcpAccessTokenProvider? _tokenProvider = null;
 
     /// <summary>
     /// Initializes a new instance of the Sports2000CustomerTools class.
@@ -19,7 +19,12 @@ public class Sports2000CustomerTools
     /// <param name="tokenProvider">The provider for retrieving the current access token.</param>
     public Sports2000CustomerTools(ISmartMcpAccessTokenProvider tokenProvider)
     {
-        _tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
+        _tokenProvider = tokenProvider; //?? throw new ArgumentNullException(nameof(tokenProvider));
+    }
+
+    // Empty default - constructor, as when executed via .exe (stdio) we do not inject the ISmartMcpAccessTokenProvider
+    public Sports2000CustomerTools() 
+    {
     }
 
     [McpServerTool]
@@ -27,7 +32,7 @@ public class Sports2000CustomerTools
     public string GetCustomerDetails(
         [Description("Customer Number (optional)")] int piCustNum = 0,
         [Description("Customer Name filter (optional)")] string pcName = "",
-        [Description("jwtToken for authentication (optional)")] string pcJwtToken = "")
+        [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
     {
         try
         {
@@ -38,7 +43,7 @@ public class Sports2000CustomerTools
 
             sports2000mcpao appserver = new sports2000mcpao(m_Conn);
 
-            string jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider.GetAccessToken() : pcJwtToken;
+            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
 
             appserver.GetCustomerDetails(Configuration.AuthKey,
                                          jwtToken,
@@ -61,7 +66,7 @@ public class Sports2000CustomerTools
     public string OpenCustomerForm(
         [Description("Customer Number (optional)")] int piCustNum = 0,
         [Description("Customer Name filter (optional)")] string pcName = "",
-        [Description("jwtToken for authentication (optional)")] string pcJwtToken = "")
+        [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
     {
         try
         {
@@ -73,7 +78,7 @@ public class Sports2000CustomerTools
             sports2000mcpao appserver = new sports2000mcpao(m_Conn);
 
             // Use JWT token from context if available, otherwise use parameter
-            string jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider.GetAccessToken() : pcJwtToken;
+            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
             
             appserver.OpenCustomerForm(Configuration.AuthKey,
                                        jwtToken,
@@ -95,8 +100,7 @@ public class Sports2000CustomerTools
     [Description("Queries/searches customers based on an OpenEdge ABL Query string (FOR EACH) for the eCustomer table. Fields of the table are: CustNum (integer), Country (character), Name (character), Address (character), Address2 (character), City (character), State (character), PostalCode (character), Contact (character), Phone (character), SalesRep (character), CreditLimit (decimal), Balance (decimal), Terms (character), Discount (integer), Comments (character), Fax (character), EmailAddress (character)")]
     public string QueryCustomers(
         [Description("The OpenEdge ABL Query string for the eCustomer table (mandatory)")] string pcQueryString = "",
-        [Description("jwtToken for authentication (optional)")] string pcJwtToken = "")
-
+        [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
     {
         try
         {
@@ -108,7 +112,7 @@ public class Sports2000CustomerTools
             sports2000mcpao appserver = new sports2000mcpao(m_Conn);
 
             // Use JWT token from context if available, otherwise use parameter
-            string jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider.GetAccessToken() : pcJwtToken;
+            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
             appserver.QueryCustomers (Configuration.AuthKey,
                                       jwtToken,
                                       pcQueryString,
@@ -137,7 +141,7 @@ public class Sports2000CustomerTools
         [Description("The updated value for the Country (optional)")] string pcCountry = "",
         [Description("The updated value for the Phone (optional)")] string pcPhone = "",
         [Description("The updated value for the Email address(optional)")] string pcEmailAddress = "",
-        [Description("jwtToken for authentication (optional)")] string pcJwtToken = ""
+        [Description("jwtToken for authentication (optional)")] string? pcJwtToken = ""
         )
     {
         try
@@ -150,7 +154,7 @@ public class Sports2000CustomerTools
             sports2000mcpao appserver = new sports2000mcpao(m_Conn);
 
             // Use JWT token from context if available, otherwise use parameter
-            string jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider.GetAccessToken() : pcJwtToken;
+            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
             appserver.UpdateCustomerDetails(Configuration.AuthKey,
                                             jwtToken,
                                             piCustNum,
