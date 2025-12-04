@@ -1,7 +1,7 @@
 
 /*
 **
-**    Created by PROGRESS ProxyGen (Progress Version 12.8) Thu Dec 04 09:53:02 CET 2025
+**    Created by PROGRESS ProxyGen (Progress Version 12.8) Thu Dec 04 10:51:08 CET 2025
 **
 */
 
@@ -231,6 +231,54 @@ namespace Consultingwerk.Sports2000Proxy
 
 		// Get output parameters
 		outValue = parms.getOutputParameter(4);
+		pcResponse = (string)outValue;
+
+
+		if (rqCtx != null) rqCtx.Release();
+
+
+		// Return output value
+		return (string)(parms.ProcedureReturnValue);
+
+	}
+
+/// <summary>
+	/// 
+	/// </summary> 
+	public string GetUserProfile(string pcAuthKey, string pcJwtToken, out string pcResponse)
+	{
+		RqContext rqCtx = null;
+		if (isSessionAvailable() == false)
+			throw new Open4GLException(NotAvailable);
+
+		Object outValue;
+		ParameterSet parms = new ParameterSet(3);
+
+		// Set up input parameters
+		parms.setStringParameter(1, pcAuthKey, ParameterSet.INPUT);
+		parms.setStringParameter(2, pcJwtToken, ParameterSet.INPUT);
+
+
+		// Set up input/output parameters
+
+
+		// Set up Out parameters
+		parms.setLongCharParameter(3, null, ParameterSet.OUTPUT);
+
+
+		// Setup local MetaSchema if any params are tables
+
+
+
+		// Set up return type
+		
+
+		// Run procedure
+		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/get-user-profile.p", parms);
+
+
+		// Get output parameters
+		outValue = parms.getOutputParameter(3);
 		pcResponse = (string)outValue;
 
 
