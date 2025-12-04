@@ -30,7 +30,7 @@
       <DotNetXSDGenerator>xsd</DotNetXSDGenerator>
       <DotNetNamespace>Consultingwerk.Sports2000Proxy</DotNetNamespace>
       <DotNetTitle>Sports2000Proxy</DotNetTitle>
-      <DotNetVersion>1.3</DotNetVersion>
+      <DotNetVersion>1.4</DotNetVersion>
       <DotNetDesc>Proxy for the Sports2000 Demo MCP Server</DotNetDesc>
       <DotNetCompany>Consultingwerk Application Modernization Solitions Ltd.</DotNetCompany>
       <DotNetProduct>Sports2000</DotNetProduct>
@@ -89,6 +89,36 @@
         </Parameter>
         <Parameter allowUnknown="false" ordinal="3" writeXmlBeforeImage="false">
           <Name>pcName</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="4" writeXmlBeforeImage="false">
+          <Name>pcResponse</Name>
+          <Type>39</Type>
+          <Mode>2</Mode>
+        </Parameter>
+      </ProcDetail>
+    </Procedure>
+    <Procedure isPersistent="false" useFullName="false">
+      <Name>get-item-details</Name>
+      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
+      <ProcExt>p</ProcExt>
+      <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
+        <Name>GetItemDetails</Name>
+        <HelpString />
+        <Parameter allowUnknown="false" ordinal="1" writeXmlBeforeImage="false">
+          <Name>pcAuthKey</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="2" writeXmlBeforeImage="false">
+          <Name>pcJwtToken</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="3" writeXmlBeforeImage="false">
+          <Name>pcItemNameFilter</Name>
           <Type>1</Type>
           <Mode>1</Mode>
         </Parameter>

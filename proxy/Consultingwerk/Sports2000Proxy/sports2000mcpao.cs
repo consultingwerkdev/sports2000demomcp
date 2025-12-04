@@ -1,7 +1,7 @@
 
 /*
 **
-**    Created by PROGRESS ProxyGen (Progress Version 12.8) Tue Nov 18 05:45:45 CET 2025
+**    Created by PROGRESS ProxyGen (Progress Version 12.8) Thu Dec 04 09:53:02 CET 2025
 **
 */
 
@@ -182,6 +182,55 @@ namespace Consultingwerk.Sports2000Proxy
 
 		// Get output parameters
 		outValue = parms.getOutputParameter(5);
+		pcResponse = (string)outValue;
+
+
+		if (rqCtx != null) rqCtx.Release();
+
+
+		// Return output value
+		return (string)(parms.ProcedureReturnValue);
+
+	}
+
+/// <summary>
+	/// 
+	/// </summary> 
+	public string GetItemDetails(string pcAuthKey, string pcJwtToken, string pcItemNameFilter, out string pcResponse)
+	{
+		RqContext rqCtx = null;
+		if (isSessionAvailable() == false)
+			throw new Open4GLException(NotAvailable);
+
+		Object outValue;
+		ParameterSet parms = new ParameterSet(4);
+
+		// Set up input parameters
+		parms.setStringParameter(1, pcAuthKey, ParameterSet.INPUT);
+		parms.setStringParameter(2, pcJwtToken, ParameterSet.INPUT);
+		parms.setStringParameter(3, pcItemNameFilter, ParameterSet.INPUT);
+
+
+		// Set up input/output parameters
+
+
+		// Set up Out parameters
+		parms.setLongCharParameter(4, null, ParameterSet.OUTPUT);
+
+
+		// Setup local MetaSchema if any params are tables
+
+
+
+		// Set up return type
+		
+
+		// Run procedure
+		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/get-item-details.p", parms);
+
+
+		// Get output parameters
+		outValue = parms.getOutputParameter(4);
 		pcResponse = (string)outValue;
 
 
