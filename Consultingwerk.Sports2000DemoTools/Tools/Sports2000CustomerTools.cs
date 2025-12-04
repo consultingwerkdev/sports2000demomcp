@@ -27,6 +27,18 @@ public class Sports2000CustomerTools
     {
     }
 
+    private sports2000mcpao GetAppServerConnection ()
+    {
+        string connectionStr = Configuration.ConnectionString;
+
+        Connection m_Conn = new Connection(connectionStr, "", "", "");
+        m_Conn.SessionModel = 1;
+
+        sports2000mcpao appserver = new sports2000mcpao(m_Conn);
+
+        return appserver;
+    }
+
     [McpServerTool]
     [Description("Returns details (Name, Address, City, Country, CreditLimit, Ballance, Salesrep) about customers based on a Customer Number (CustNum) or the customer name. When multiple customers are found using the customer name, a list is returned instead of details")]
     public string GetCustomerDetails(
@@ -36,13 +48,9 @@ public class Sports2000CustomerTools
     {
         try
         {
-            string connectionStr = Configuration.ConnectionString;
+            sports2000mcpao appserver = this.GetAppServerConnection();
 
-            Connection m_Conn = new Connection(connectionStr, "", "", "");
-            m_Conn.SessionModel = 1;
-
-            sports2000mcpao appserver = new sports2000mcpao(m_Conn);
-
+            // Use JWT token from context if available, otherwise use parameter
             string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
 
             appserver.GetCustomerDetails(Configuration.AuthKey,
@@ -50,6 +58,60 @@ public class Sports2000CustomerTools
                                          piCustNum,
                                          pcName,
                                          out string response);
+
+            appserver.Dispose();
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }
+
+    [McpServerTool]
+    [Description("Returns details (Item Number, Item Name, Price, On Hand, Catalog Page, Catalog Description, Category 1, Category2, Special, Weight) for the items matching the provided search string. Leave the search string empty to return all items (ca. 70). It's preferabls to search for short words, singular words. This tool provides catalog, product information including quantity on stock (at hand).")]
+    public string GetItemDetails(
+        [Description("Item Name filter (optional)")] string pcItemNameFilter = "",
+        [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
+    {
+        try
+        {
+            sports2000mcpao appserver = this.GetAppServerConnection();
+
+            // Use JWT token from context if available, otherwise use parameter
+            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+
+            appserver.GetItemDetails(Configuration.AuthKey,
+                                     jwtToken,                                     
+                                     pcItemNameFilter,
+                                     out string response);
+
+            appserver.Dispose();
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }
+
+    [McpServerTool]
+    [Description("Returns the current users (my) profile including details like the customer number, email address and company name.")]
+    public string GetUserProfile(
+        [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
+    {
+        try
+        {
+            sports2000mcpao appserver = this.GetAppServerConnection();
+
+            // Use JWT token from context if available, otherwise use parameter
+            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+
+            appserver.GetUserProfile(Configuration.AuthKey,
+                                     jwtToken,
+                                     out string response);
 
             appserver.Dispose();
 
@@ -70,12 +132,7 @@ public class Sports2000CustomerTools
     {
         try
         {
-            string connectionStr = Configuration.ConnectionString;
-
-            Connection m_Conn = new Connection(connectionStr, "", "", "");
-            m_Conn.SessionModel = 1;
-
-            sports2000mcpao appserver = new sports2000mcpao(m_Conn);
+            sports2000mcpao appserver = this.GetAppServerConnection();
 
             // Use JWT token from context if available, otherwise use parameter
             string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
@@ -104,15 +161,11 @@ public class Sports2000CustomerTools
     {
         try
         {
-            string connectionStr = Configuration.ConnectionString;
-
-            Connection m_Conn = new Connection(connectionStr, "", "", "");
-            m_Conn.SessionModel = 1;
-
-            sports2000mcpao appserver = new sports2000mcpao(m_Conn);
+            sports2000mcpao appserver = this.GetAppServerConnection();
 
             // Use JWT token from context if available, otherwise use parameter
             string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+
             appserver.QueryCustomers (Configuration.AuthKey,
                                       jwtToken,
                                       pcQueryString,
@@ -146,12 +199,7 @@ public class Sports2000CustomerTools
     {
         try
         {
-            string connectionStr = Configuration.ConnectionString;
-
-            Connection m_Conn = new Connection(connectionStr, "", "", "");
-            m_Conn.SessionModel = 1;
-
-            sports2000mcpao appserver = new sports2000mcpao(m_Conn);
+            sports2000mcpao appserver = this.GetAppServerConnection();
 
             // Use JWT token from context if available, otherwise use parameter
             string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
