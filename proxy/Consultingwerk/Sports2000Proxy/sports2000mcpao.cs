@@ -1,7 +1,7 @@
 
 /*
 **
-**    Created by PROGRESS ProxyGen (Progress Version 12.8) Thu Dec 04 10:51:08 CET 2025
+**    Created by PROGRESS ProxyGen (Progress Version 12.8) Thu Dec 04 12:15:23 CET 2025
 **
 */
 
@@ -146,6 +146,58 @@ namespace Consultingwerk.Sports2000Proxy
         /// <summary>
 	/// 
 	/// </summary> 
+	public string CreateCustomerOrder(string pcAuthKey, string pcJwtToken, int piCustNum, int piItemNum, int piQuantity, 
+out string pcResponse)
+	{
+		RqContext rqCtx = null;
+		if (isSessionAvailable() == false)
+			throw new Open4GLException(NotAvailable);
+
+		Object outValue;
+		ParameterSet parms = new ParameterSet(6);
+
+		// Set up input parameters
+		parms.setStringParameter(1, pcAuthKey, ParameterSet.INPUT);
+		parms.setStringParameter(2, pcJwtToken, ParameterSet.INPUT);
+		parms.setIntegerParameter(3, piCustNum, ParameterSet.INPUT);
+		parms.setIntegerParameter(4, piItemNum, ParameterSet.INPUT);
+		parms.setIntegerParameter(5, piQuantity, ParameterSet.INPUT);
+
+
+		// Set up input/output parameters
+
+
+		// Set up Out parameters
+		parms.setLongCharParameter(6, null, ParameterSet.OUTPUT);
+
+
+		// Setup local MetaSchema if any params are tables
+
+
+
+		// Set up return type
+		
+
+		// Run procedure
+		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/create-customer-order.p", parms);
+
+
+		// Get output parameters
+		outValue = parms.getOutputParameter(6);
+		pcResponse = (string)outValue;
+
+
+		if (rqCtx != null) rqCtx.Release();
+
+
+		// Return output value
+		return (string)(parms.ProcedureReturnValue);
+
+	}
+
+/// <summary>
+	/// 
+	/// </summary> 
 	public string GetCustomerDetails(string pcAuthKey, string pcJwtToken, int piCustNum, string pcName, out string pcResponse)
 	{
 		RqContext rqCtx = null;
@@ -182,6 +234,55 @@ namespace Consultingwerk.Sports2000Proxy
 
 		// Get output parameters
 		outValue = parms.getOutputParameter(5);
+		pcResponse = (string)outValue;
+
+
+		if (rqCtx != null) rqCtx.Release();
+
+
+		// Return output value
+		return (string)(parms.ProcedureReturnValue);
+
+	}
+
+/// <summary>
+	/// 
+	/// </summary> 
+	public string GetCustomerOrders(string pcAuthKey, string pcJwtToken, int piCustNum, out string pcResponse)
+	{
+		RqContext rqCtx = null;
+		if (isSessionAvailable() == false)
+			throw new Open4GLException(NotAvailable);
+
+		Object outValue;
+		ParameterSet parms = new ParameterSet(4);
+
+		// Set up input parameters
+		parms.setStringParameter(1, pcAuthKey, ParameterSet.INPUT);
+		parms.setStringParameter(2, pcJwtToken, ParameterSet.INPUT);
+		parms.setIntegerParameter(3, piCustNum, ParameterSet.INPUT);
+
+
+		// Set up input/output parameters
+
+
+		// Set up Out parameters
+		parms.setLongCharParameter(4, null, ParameterSet.OUTPUT);
+
+
+		// Setup local MetaSchema if any params are tables
+
+
+
+		// Set up return type
+		
+
+		// Run procedure
+		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/get-customer-orders.p", parms);
+
+
+		// Get output parameters
+		outValue = parms.getOutputParameter(4);
 		pcResponse = (string)outValue;
 
 

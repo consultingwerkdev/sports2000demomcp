@@ -70,6 +70,46 @@
     <IsTTResultSet>false</IsTTResultSet>
     <WriteDatasetBeforeImage>false</WriteDatasetBeforeImage>
     <Procedure isPersistent="false" useFullName="false">
+      <Name>create-customer-order</Name>
+      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
+      <ProcExt>p</ProcExt>
+      <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
+        <Name>CreateCustomerOrder</Name>
+        <HelpString />
+        <Parameter allowUnknown="false" ordinal="1" writeXmlBeforeImage="false">
+          <Name>pcAuthKey</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="2" writeXmlBeforeImage="false">
+          <Name>pcJwtToken</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="3" writeXmlBeforeImage="false">
+          <Name>piCustNum</Name>
+          <Type>4</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="4" writeXmlBeforeImage="false">
+          <Name>piItemNum</Name>
+          <Type>4</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="5" writeXmlBeforeImage="false">
+          <Name>piQuantity</Name>
+          <Type>4</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="6" writeXmlBeforeImage="false">
+          <Name>pcResponse</Name>
+          <Type>39</Type>
+          <Mode>2</Mode>
+        </Parameter>
+      </ProcDetail>
+    </Procedure>
+    <Procedure isPersistent="false" useFullName="false">
       <Name>get-customer-details</Name>
       <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
       <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
@@ -90,6 +130,36 @@
         <Parameter allowUnknown="false" ordinal="3" writeXmlBeforeImage="false">
           <Name>pcName</Name>
           <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="4" writeXmlBeforeImage="false">
+          <Name>pcResponse</Name>
+          <Type>39</Type>
+          <Mode>2</Mode>
+        </Parameter>
+      </ProcDetail>
+    </Procedure>
+    <Procedure isPersistent="false" useFullName="false">
+      <Name>get-customer-orders</Name>
+      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
+      <ProcExt>p</ProcExt>
+      <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
+        <Name>GetCustomerOrders</Name>
+        <HelpString />
+        <Parameter allowUnknown="false" ordinal="1" writeXmlBeforeImage="false">
+          <Name>pcAuthKey</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="2" writeXmlBeforeImage="false">
+          <Name>pcJwtToken</Name>
+          <Type>1</Type>
+          <Mode>1</Mode>
+        </Parameter>
+        <Parameter allowUnknown="false" ordinal="3" writeXmlBeforeImage="false">
+          <Name>piCustNum</Name>
+          <Type>4</Type>
           <Mode>1</Mode>
         </Parameter>
         <Parameter allowUnknown="false" ordinal="4" writeXmlBeforeImage="false">

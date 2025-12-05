@@ -40,6 +40,38 @@ public class Sports2000CustomerTools
     }
 
     [McpServerTool]
+    [Description("Creates a new Order for a Customer. We require the Customer Number, the Item Number and Quantity to proceed.")]
+    public string CreateCustomerOrder(
+        [Description("Customer Number (mandatory)")] int piCustNum = 0,
+        [Description("Item Number (mandatory)")] int piItemNum = 0,
+        [Description("Quantity Number (mandatory)")] int piQuantity = 0,
+        [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
+    {
+        try
+        {
+            sports2000mcpao appserver = this.GetAppServerConnection();
+
+            // Use JWT token from context if available, otherwise use parameter
+            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+
+            appserver.CreateCustomerOrder(Configuration.AuthKey,
+                                          jwtToken,
+                                          piCustNum,
+                                          piItemNum,
+                                          piQuantity,
+                                          out string response);
+
+            appserver.Dispose();
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }
+
+    [McpServerTool]
     [Description("Returns details (Name, Address, City, Country, CreditLimit, Ballance, Salesrep) about customers based on a Customer Number (CustNum) or the customer name. When multiple customers are found using the customer name, a list is returned instead of details")]
     public string GetCustomerDetails(
         [Description("Customer Number (optional)")] int piCustNum = 0,
@@ -68,6 +100,35 @@ public class Sports2000CustomerTools
             return ex.Message;
         }
     }
+
+    [McpServerTool]
+    [Description("Returns details of all orders based on a customer number. This includes the order status, date, promise date, carrier, ship date and order line item details such as item and quantity.")]
+    public string GetCustomerOrders(
+        [Description("Customer Number (mandatory)")] int piCustNum,
+        [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
+    {
+        try
+        {
+            sports2000mcpao appserver = this.GetAppServerConnection();
+
+            // Use JWT token from context if available, otherwise use parameter
+            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+
+            appserver.GetCustomerOrders(Configuration.AuthKey,
+                                        jwtToken,
+                                        piCustNum,
+                                        out string response);
+
+            appserver.Dispose();
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }
+
 
     [McpServerTool]
     [Description("Returns details (Item Number, Item Name, Price, On Hand, Catalog Page, Catalog Description, Category 1, Category2, Special, Weight) for the items matching the provided search string. Leave the search string empty to return all items (ca. 70). It's preferabls to search for short words, singular words. This tool provides catalog, product information including quantity on stock (at hand).")]
