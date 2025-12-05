@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.0" />
+    <PackageReference Include="ModelContextProtocol" Version="0.4.0-preview.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Consultingwerk.SmartMcpAuthentication\Consultingwerk.SmartMcpAuthentication.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Progress.Messages">
+      <HintPath>..\proxy\Consultingwerk\Sports2000Proxy\Progress.Messages.dll</HintPath>
+    </Reference>
+    <Reference Include="Progress.o4glrt">
+      <HintPath>..\proxy\Consultingwerk\Sports2000Proxy\Progress.o4glrt.dll</HintPath>
+    </Reference>
+    <Reference Include="sports2000mcpao">
+      <HintPath>..\proxy\Consultingwerk\Sports2000Proxy\sports2000mcpao.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
