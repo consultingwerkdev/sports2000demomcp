@@ -51,8 +51,8 @@ public class Sports2000CustomerTools
         {
             sports2000mcpao appserver = this.GetAppServerConnection();
 
-            // Use JWT token from context if available, otherwise use parameter
-            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+            // Resolve token based on configuration (handles Enabled=false stripping, OIDC vs PassThrough)
+            string? jwtToken = _tokenProvider?.ResolveToken(pcJwtToken);
 
             appserver.CreateCustomerOrder(Configuration.AuthKey,
                                           jwtToken,
@@ -82,8 +82,8 @@ public class Sports2000CustomerTools
         {
             sports2000mcpao appserver = this.GetAppServerConnection();
 
-            // Use JWT token from context if available, otherwise use parameter
-            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+            // Resolve token based on configuration (handles Enabled=false stripping, OIDC vs PassThrough)
+            string? jwtToken = _tokenProvider?.ResolveToken(pcJwtToken);
 
             appserver.GetCustomerDetails(Configuration.AuthKey,
                                          jwtToken,
@@ -111,8 +111,8 @@ public class Sports2000CustomerTools
         {
             sports2000mcpao appserver = this.GetAppServerConnection();
 
-            // Use JWT token from context if available, otherwise use parameter
-            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+            // Resolve token based on configuration (handles Enabled=false stripping, OIDC vs PassThrough)
+            string? jwtToken = _tokenProvider?.ResolveToken(pcJwtToken);
 
             appserver.GetCustomerOrders(Configuration.AuthKey,
                                         jwtToken,
@@ -140,8 +140,8 @@ public class Sports2000CustomerTools
         {
             sports2000mcpao appserver = this.GetAppServerConnection();
 
-            // Use JWT token from context if available, otherwise use parameter
-            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+            // Resolve token based on configuration (handles Enabled=false stripping, OIDC vs PassThrough)
+            string? jwtToken = _tokenProvider?.ResolveToken(pcJwtToken);
 
             appserver.GetItemDetails(Configuration.AuthKey,
                                      jwtToken,                                     
@@ -167,8 +167,8 @@ public class Sports2000CustomerTools
         {
             sports2000mcpao appserver = this.GetAppServerConnection();
 
-            // Use JWT token from context if available, otherwise use parameter
-            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+            // Resolve token based on configuration (handles Enabled=false stripping, OIDC vs PassThrough)
+            string? jwtToken = _tokenProvider?.ResolveToken(pcJwtToken);
 
             appserver.GetUserProfile(Configuration.AuthKey,
                                      jwtToken,
@@ -195,8 +195,8 @@ public class Sports2000CustomerTools
         {
             sports2000mcpao appserver = this.GetAppServerConnection();
 
-            // Use JWT token from context if available, otherwise use parameter
-            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+            // Resolve token based on configuration (handles Enabled=false stripping, OIDC vs PassThrough)
+            string? jwtToken = _tokenProvider?.ResolveToken(pcJwtToken);
             
             appserver.OpenCustomerForm(Configuration.AuthKey,
                                        jwtToken,
@@ -224,8 +224,8 @@ public class Sports2000CustomerTools
         {
             sports2000mcpao appserver = this.GetAppServerConnection();
 
-            // Use JWT token from context if available, otherwise use parameter
-            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+            // Resolve token based on configuration (handles Enabled=false stripping, OIDC vs PassThrough)
+            string? jwtToken = _tokenProvider?.ResolveToken(pcJwtToken);
 
             appserver.QueryCustomers (Configuration.AuthKey,
                                       jwtToken,
@@ -262,8 +262,8 @@ public class Sports2000CustomerTools
         {
             sports2000mcpao appserver = this.GetAppServerConnection();
 
-            // Use JWT token from context if available, otherwise use parameter
-            string? jwtToken = string.IsNullOrEmpty(pcJwtToken) ? _tokenProvider?.GetAccessToken() : pcJwtToken;
+            // Resolve token based on configuration (handles Enabled=false stripping, OIDC vs PassThrough)
+            string? jwtToken = _tokenProvider?.ResolveToken(pcJwtToken);
             appserver.UpdateCustomerDetails(Configuration.AuthKey,
                                             jwtToken,
                                             piCustNum,
