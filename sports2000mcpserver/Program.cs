@@ -1,12 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Protocol;
-using ModelContextProtocol.Server;
 using sports2000mcpserver;
-using System.Collections;
 using System.IO;
-using System.Text.Json;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -28,7 +24,7 @@ builder.Logging.AddProvider(new FileLoggerProvider(logFilePath));
 
 // Add the MCP services: the transport to use (stdio) and the tools to register.
 builder.Services
-    .AddMcpServer(EnableUiExtensionCapability)
+    .AddMcpServer(McpUiServerSupport.EnableUiCapability)
     .WithStdioServerTransport()
     .WithTools<Sports2000CustomerTools>()
     .WithTools(Sports2000CustomerAppRegistrations.CreateTools())
@@ -102,54 +98,4 @@ internal sealed class NullScope : IDisposable
     public void Dispose()
     {
     }
-}
-
-static void EnableUiExtensionCapability(McpServerOptions serverOptions)
-{
-#pragma warning disable MCPEXP001
-    serverOptions.Capabilities ??= new ServerCapabilities();
-    serverOptions.Capabilities.Extensions ??= new StringObjectMap();
-    serverOptions.Capabilities.Extensions["io.modelcontextprotocol/ui"] = JsonDocument.Parse("{}").RootElement.Clone();
-#pragma warning restore MCPEXP001
-}
-
-internal sealed class StringObjectMap : IDictionary<string, object>
-{
-    private readonly Dictionary<string, object> _inner = new(StringComparer.Ordinal);
-
-    public object this[string key]
-    {
-        get => _inner[key];
-        set => _inner[key] = value;
-    }
-
-    public ICollection<string> Keys => _inner.Keys;
-
-    public ICollection<object> Values => _inner.Values;
-
-    public int Count => _inner.Count;
-
-    public bool IsReadOnly => false;
-
-    public void Add(string key, object value) => _inner.Add(key, value);
-
-    public void Add(KeyValuePair<string, object> item) => ((IDictionary<string, object>)_inner).Add(item);
-
-    public void Clear() => _inner.Clear();
-
-    public bool Contains(KeyValuePair<string, object> item) => ((IDictionary<string, object>)_inner).Contains(item);
-
-    public bool ContainsKey(string key) => _inner.ContainsKey(key);
-
-    public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex) => ((IDictionary<string, object>)_inner).CopyTo(array, arrayIndex);
-
-    public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => _inner.GetEnumerator();
-
-    public bool Remove(string key) => _inner.Remove(key);
-
-    public bool Remove(KeyValuePair<string, object> item) => ((IDictionary<string, object>)_inner).Remove(item);
-
-    public bool TryGetValue(string key, out object value) => _inner.TryGetValue(key, out value!);
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

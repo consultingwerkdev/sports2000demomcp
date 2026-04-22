@@ -80,6 +80,7 @@
               "extractLicenses": false,
               "sourceMap": true,
               "outputHashing": "none",
+              "deployUrl": "http://localhost:5118/ui-resources/sports2000-customer/",
               "outputPath": {
                 "base": "../sports2000mcpserverweb/wwwroot/ui-resources/sports2000-customer",
                 "browser": "",
