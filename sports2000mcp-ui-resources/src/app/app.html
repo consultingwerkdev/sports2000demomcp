@@ -1,0 +1,42 @@
+<div class="app-shell">
+  @if (shouldRenderForm()) {
+    <section class="form-stage">
+      <smart-mcp-form class="w-100 h-100" #form [smart-form-layout]="formName"></smart-mcp-form>
+
+      @if (isLoadingCustomer()) {
+        <div class="status-overlay">
+          <div class="status-card">
+            <p class="status-label">Sports2000 MCP Shell</p>
+            <h1>{{ statusHeadline() }}</h1>
+            <p>{{ statusMessage() }}</p>
+          </div>
+        </div>
+      }
+    </section>
+  } @else {
+    <section class="status-stage">
+      <div class="status-card">
+        <p class="status-label">Sports2000 MCP Shell</p>
+        <h1>{{ statusHeadline() }}</h1>
+        <p>{{ statusMessage() }}</p>
+
+        @if (state().toolResultText) {
+          <div class="status-detail">
+            <span class="detail-label">Tool result</span>
+            <p>{{ state().toolResultText }}</p>
+          </div>
+        }
+
+        @if (state().lastHostContext) {
+          <div class="status-detail">
+            <span class="detail-label">Host context received</span>
+            <p>The host supplied additional context and the shell is tracking it for later iterations.</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <div kendoWindowContainer></div>
+  <smart-dialog-outlet></smart-dialog-outlet>
+</div>

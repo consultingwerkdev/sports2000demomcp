@@ -287,6 +287,4 @@ public class Sports2000CustomerTools
             return ex.Message;
         }
     }
-
-
 }

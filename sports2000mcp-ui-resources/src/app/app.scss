@@ -1,0 +1,97 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(44, 92, 197, 0.2), transparent 36%),
+    linear-gradient(180deg, #081426 0%, #0d1b2f 100%);
+  color: #eff6ff;
+}
+
+.status-stage,
+.form-stage {
+  min-height: 100vh;
+}
+
+.status-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+}
+
+.status-card {
+  width: min(40rem, 100%);
+  padding: 2rem;
+  border: 1px solid rgba(191, 219, 254, 0.28);
+  border-radius: 1.5rem;
+  background: rgba(8, 20, 38, 0.78);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(14px);
+}
+
+.status-card h1 {
+  margin: 0 0 0.85rem;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1.1;
+}
+
+.status-card p {
+  margin: 0;
+  color: #dbeafe;
+  line-height: 1.6;
+}
+
+.status-label {
+  margin-bottom: 0.75rem;
+  color: #93c5fd;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-detail {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(191, 219, 254, 0.16);
+}
+
+.detail-label {
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  color: #bfdbfe;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.form-stage {
+  position: relative;
+}
+
+.status-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(8, 20, 38, 0.24);
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .status-stage {
+    padding: 1rem;
+  }
+
+  .status-card {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+}

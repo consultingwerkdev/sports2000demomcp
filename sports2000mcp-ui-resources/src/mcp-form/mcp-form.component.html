@@ -1,0 +1,117 @@
+<!--
+**************************************************************************
+* Copyright © 2006-2026 by Consultingwerk Ltd. ("CW") -                  *
+* www.consultingwerk.com and other contributors as listed                *
+* below. All Rights Reserved.                                            *
+*                                                                        *
+*  Software is distributed on an "AS IS", WITHOUT WARRANTY OF ANY        *
+*   KIND, either express or implied.                                     *
+*                                                                        *
+*  Contributors:                                                         *
+*                                                                        *
+**************************************************************************
+
+--------------------------------------------------------------------------
+    File        : smart-form.component.html
+    Purpose     : Template for Smart Form.
+    Author(s)   : Radu Nicoara
+    Created     : Dec 22, 2017
+--------------------------------------------------------------------------
+-->
+<div class="smart-form-root">
+    <div #container>
+        @if(!!_formConfigurationSignal()) {
+            <div 
+                #root
+                kendoRippleContainer
+                [disabled]="!_enableRippleEffectSignal()"
+                [ngClass]="_formConfigurationSignal().settings?.classList || ''">
+                <div #dataSourcesContainer></div>
+                    <smart-layout-container
+                        #layoutContainer
+                        class="p-2"
+                        [layout]="_formConfigurationSignal()"
+                        [stretchMode]="_formConfigurationSignal().settings?.stretchMode === true"
+                        [height]="_formHeightSignal()"
+                        [containerClass]="_containerClassStrSignal()"
+                        [columnClass]="_columnClassStrSignal()">
+                    </smart-layout-container> 
+            </div>   
+        }
+    </div>
+
+    <!-- FAB Action Buttons -->
+    @if (visibleActionButtons().length > 0) {
+        <div class="smart-form-fab-container">
+            @for (button of visibleActionButtons(); track $index) {
+                <smart-fab
+                    [smart-fab-icon]="button.icon"
+                    [smart-fab-svg-icon]="button.svgIcon"
+                    [smart-fab-text]="button.text"
+                    [smart-fab-actions]="button.actions"
+                    [smart-fab-position-mode]="'absolute'"
+                    [smart-fab-align]="{ vertical: 'bottom', horizontal: 'end' }"
+                    [smart-fab-offset]="{ x: '0px', y: ($index * -72) + 'px' }">
+                </smart-fab>
+            }
+        </div>
+    }
+</div>
+
+<ng-template #floatingWindowTitleBar let-win>
+    <div #floatingWindowTitle class="k-window-title">
+        @if(_formIconUrlSignal() && _iconTypeSignal() === 'image') {
+            <img class="form-window-icon" [src]="_formIconUrlSignal()">
+        }
+        @if(_formIconUrlSignal() && _iconTypeSignal() === 'icon') {
+            <i [class]="'form-window-icon ' + _formIconUrlSignal()"></i>
+        }
+
+        <span style="margin-left: inherit">
+            {{_layoutFormTitleSignal() || _formTitleSignal() || _fallbackTitleSignal() || _formRepositoryNameSignal()}}
+        </span>
+    </div>
+    
+    @if(_windowStateSignal() !== 'minimized') {
+        <button
+            (click)="setWindowState('minimized')"
+            kendoButton
+            iconClass="fa-regular fa-window-minimize"
+            style="display: inline-flex"
+            title="Minimize"
+            [fillMode]="'flat'"
+        >
+        </button>
+    }
+    @if(!_windowStateSignal() || _windowStateSignal() === 'default') {
+        <button
+            (click)="setWindowState('maximized')"
+            kendoButton
+            iconClass="fa-regular fa-window-maximize"
+            style="display: inline-flex"
+            title="Maximize"
+            [fillMode]="'flat'"
+        >
+        </button>
+    }
+    @if(_windowStateSignal() === 'maximized' || _windowStateSignal() === 'minimized') {
+        <button
+            (click)="setWindowState('default')"
+            kendoButton
+            iconClass="fa-regular fa-window-restore"
+            style="display: inline-flex"
+            title="Restore"
+            [fillMode]="'flat'"
+        >
+        </button>
+    }
+    <button
+        (click)="closeWindow()"
+        kendoButton
+        iconClass="fa-solid fa-xmark"
+        style="display: inline-flex"
+        title="Close" 
+        [fillMode]="'flat'"
+    >
+    </button>
+</ng-template>
