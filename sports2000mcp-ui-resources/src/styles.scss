@@ -1,58 +1,88 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@progress/kendo-theme-default/scss/all';
-html, body {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
+
+:root {
+  color-scheme: light dark;
+  --app-shell-bg: var(--color-background-primary, #f3f4f6);
+  --app-surface-bg: var(--color-background-secondary, rgba(255, 255, 255, 0.94));
+  --app-surface-elevated: var(--color-background-secondary, rgba(255, 255, 255, 0.98));
+  --app-overlay: rgba(17, 24, 39, 0.08);
+  --app-text: var(--color-text-primary, #1f2328);
+  --app-text-muted: var(--color-text-secondary, #5b6472);
+  --app-text-subtle: var(--color-text-secondary, #6b7280);
+  --app-border: var(--color-border-primary, var(--color-border-default, rgba(15, 23, 42, 0.12)));
+  --app-accent: var(--color-accent-brand, var(--color-brand-primary, #2563eb));
+  --app-accent-contrast: #ffffff;
+  --app-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+}
+
+[data-theme='dark'] {
+  --app-shell-bg: var(--color-background-primary, #1f2328);
+  --app-surface-bg: var(--color-background-secondary, rgba(42, 47, 54, 0.92));
+  --app-surface-elevated: var(--color-background-secondary, rgba(42, 47, 54, 0.98));
+  --app-overlay: rgba(15, 23, 42, 0.34);
+  --app-text: var(--color-text-primary, #f3f4f6);
+  --app-text-muted: var(--color-text-secondary, #d1d5db);
+  --app-text-subtle: var(--color-text-secondary, #c7ccd4);
+  --app-border: var(--color-border-primary, var(--color-border-default, rgba(255, 255, 255, 0.14)));
+  --app-accent: var(--color-accent-brand, var(--color-brand-primary, #60a5fa));
+  --app-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    background: #081426;
-    color: #eff6ff;
-    font-family: 'Segoe UI', sans-serif;
+  background: var(--app-shell-bg);
+  color: var(--app-text);
+  font-family: var(--font-sans, 'Segoe UI', system-ui, sans-serif);
 }
 
 app-root {
-    display: block;
-    min-height: 100vh;
+  display: block;
+  min-height: 100vh;
 }
 
 .mcp-shell-fallback {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    box-sizing: border-box;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
 }
 
 .mcp-shell-fallback__card {
-    max-width: 640px;
-    padding: 32px;
-    border: 1px solid rgba(191, 219, 254, 0.25);
-    border-radius: 24px;
-    background: rgba(8, 20, 38, 0.78);
-    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.45);
+  max-width: 640px;
+  padding: 32px;
+  border: 1px solid var(--app-border);
+  border-radius: 24px;
+  background: var(--app-surface-elevated);
+  box-shadow: var(--app-shadow);
 }
 
 .mcp-shell-fallback__eyebrow {
-    margin: 0 0 12px;
-    color: #93c5fd;
-    letter-spacing: 0.12em;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
+  margin: 0 0 12px;
+  color: var(--app-text-subtle);
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .mcp-shell-fallback__title {
-    margin: 0 0 12px;
-    font-size: 32px;
-    line-height: 1.1;
+  margin: 0 0 12px;
+  font-size: 32px;
+  line-height: 1.1;
 }
 
 .mcp-shell-fallback__body {
-    margin: 0;
-    color: #dbeafe;
-    line-height: 1.6;
+  margin: 0;
+  color: var(--app-text-muted);
+  line-height: 1.6;
 }

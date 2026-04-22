@@ -1,4 +1,32 @@
 <div class="app-shell">
+  @if (isDevEmulator) {
+    <header class="dev-toolbar">
+      <div class="dev-toolbar__inner">
+        <label class="dev-toolbar__field">
+          <span>Customer #</span>
+          <input
+            class="dev-toolbar__input"
+            type="number"
+            inputmode="numeric"
+            min="1"
+            [value]="devCustNumInput()"
+            (input)="onDevCustNumInput($any($event.target).value)"
+            (keydown.enter)="loadDevCustomer()"
+          />
+        </label>
+
+        <div class="dev-toolbar__actions">
+          <button class="dev-toolbar__button dev-toolbar__button--primary" type="button" (click)="loadDevCustomer()">
+            Load customer
+          </button>
+          <button class="dev-toolbar__button" type="button" (click)="clearDevCustomer()">
+            Clear
+          </button>
+        </div>
+      </div>
+    </header>
+  }
+
   @if (shouldRenderForm()) {
     <section class="form-stage">
       <smart-mcp-form class="w-100 h-100" #form [smart-form-layout]="formName"></smart-mcp-form>

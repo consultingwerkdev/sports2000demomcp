@@ -1,5 +1,6 @@
 import { DestroyRef, Injectable, effect, inject, signal } from '@angular/core';
-import { McpAppStatus, McpAppViewState } from './mcp-app.types';
+import { McpAppBridgePort } from './mcp-app-bridge.port';
+import { McpAppStatus, McpAppViewState, McpUiTheme } from './mcp-app.types';
 
 type JsonRpcId = number;
 
@@ -27,11 +28,13 @@ const INITIAL_STATE: McpAppViewState = {
   custNum: null,
   toolResultText: null,
   lastHostContext: null,
+  hostTheme: null,
+  hostStyleVariables: {},
   errorMessage: null
 };
 
 @Injectable({ providedIn: 'root' })
-export class McpAppBridgeService {
+export class McpAppBridgeService implements McpAppBridgePort {
   private readonly destroyRef = inject(DestroyRef);
   private readonly stateSignal = signal<McpAppViewState>(INITIAL_STATE);
   private readonly pendingRequests = new Map<JsonRpcId, PendingRequest>();
@@ -44,6 +47,7 @@ export class McpAppBridgeService {
   private resizeObserver: ResizeObserver | null = null;
 
   readonly state = this.stateSignal.asReadonly();
+  readonly isDevEmulator = false;
 
   constructor() {
     window.addEventListener('message', this.messageHandler);
@@ -83,6 +87,19 @@ export class McpAppBridgeService {
 
     this.patchState({
       status: this.stateSignal().custNum === null ? 'awaitingToolInput' : 'authenticating',
+      errorMessage: null
+    });
+  }
+
+  submitCustomerInput(custNum: number): void {
+    this.startCustomerFlow(custNum, null);
+  }
+
+  clearCustomerInput(): void {
+    this.patchState({
+      status: 'awaitingToolInput',
+      custNum: null,
+      toolResultText: null,
       errorMessage: null
     });
   }
@@ -180,7 +197,7 @@ export class McpAppBridgeService {
         });
         return;
       case 'ui/notifications/host-context-changed':
-        this.patchState({ lastHostContext: params ?? null });
+        this.handleHostContextChanged(params);
         return;
       case 'ui/notifications/request-teardown':
         this.disconnectResizeObserver();
@@ -194,21 +211,32 @@ export class McpAppBridgeService {
   private handleToolInput(params: unknown): void {
     const custNum = this.extractCustNum(params);
     if (custNum === null) {
+      this.setError('The show-customer tool requires a numeric custNum input.');
       this.patchState({
-        status: 'error',
         custNum: null,
-        toolResultText: null,
-        errorMessage: 'The show-customer tool requires a numeric custNum input.'
+        toolResultText: null
       });
       return;
     }
 
-    this.patchState({
-      status: 'authenticating',
-      custNum,
-      toolResultText: null,
-      errorMessage: null
-    });
+    this.startCustomerFlow(custNum, null);
+  }
+
+  private handleHostContextChanged(params: unknown): void {
+    const context = this.asRecord(params);
+    const patch: Partial<McpAppViewState> = {
+      lastHostContext: params ?? null
+    };
+
+    if (context && Object.hasOwn(context, 'theme')) {
+      patch.hostTheme = this.extractTheme(context['theme']);
+    }
+
+    if (context && Object.hasOwn(context, 'styles')) {
+      patch.hostStyleVariables = this.extractHostStyleVariables(context['styles']);
+    }
+
+    this.patchState(patch);
   }
 
   private startResizeObserver(): void {
@@ -284,6 +312,15 @@ export class McpAppBridgeService {
     }));
   }
 
+  private startCustomerFlow(custNum: number, toolResultText: string | null): void {
+    this.patchState({
+      status: 'authenticating',
+      custNum,
+      toolResultText,
+      errorMessage: null
+    });
+  }
+
   private extractCustNum(params: unknown): number | null {
     const argumentsRecord =
       this.asRecord(this.asRecord(params)?.['arguments']) ??
@@ -326,6 +363,21 @@ export class McpAppBridgeService {
     return typeof reason === 'string' && reason.length > 0
       ? reason
       : 'The tool execution was cancelled.';
+  }
+
+  private extractTheme(value: unknown): McpUiTheme | null {
+    return value === 'light' || value === 'dark' ? value : null;
+  }
+
+  private extractHostStyleVariables(styles: unknown): Record<string, string> {
+    const variables = this.asRecord(this.asRecord(styles)?.['variables']);
+    if (!variables) {
+      return {};
+    }
+
+    return Object.fromEntries(
+      Object.entries(variables).filter((entry): entry is [string, string] => typeof entry[1] === 'string')
+    );
   }
 
   private asJsonRpcMessage(value: unknown): JsonRpcMessage | null {

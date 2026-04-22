@@ -6,7 +6,8 @@ import {
   SmartServiceAdapter
 } from '@consultingwerk/smartcomponent-library';
 import { firstValueFrom } from 'rxjs';
-import { McpAppBridgeService } from './mcp-app-bridge.service';
+import { applyDocumentTheme, applyHostStyleVariables, resolveDocumentTheme } from './host-theme-utils';
+import { MCP_APP_BRIDGE, McpAppBridgePort } from './mcp-app-bridge.port';
 import { McpAppStatus } from './mcp-app.types';
 
 const SPORTS2000_SERVICE_URI = 'https://sfrbo.consultingwerkcloud.com:8821';
@@ -22,11 +23,13 @@ const CUSTOMER_DATASOURCE_NAME = 'CustomerDataSource';
 export class App {
   protected readonly authService = inject(SmartAuthenticationService);
   protected readonly serviceAdapter = inject(SmartServiceAdapter);
-  protected readonly bridge = inject(McpAppBridgeService);
+  protected readonly bridge = inject<McpAppBridgePort>(MCP_APP_BRIDGE);
   protected readonly form = viewChild<SmartFormComponent>('form');
   protected readonly formName = SPORTS2000_FORM_NAME;
 
   protected readonly state = this.bridge.state;
+  protected readonly isDevEmulator = this.bridge.isDevEmulator;
+  protected readonly devCustNumInput = signal('');
   protected readonly shouldRenderForm = computed(() => {
     const state = this.state();
     return (
@@ -40,10 +43,31 @@ export class App {
   protected readonly statusMessage = computed(() => this.getStatusMessage());
 
   private readonly authInitialized = signal(false);
+  private appliedHostVariableNames = new Set<string>();
   private authInFlight: Promise<void> | null = null;
   private customerLoadToken = 0;
 
   constructor() {
+    effect(() => {
+      const state = this.state();
+      const theme = resolveDocumentTheme(state.hostTheme);
+
+      applyDocumentTheme(theme);
+      this.appliedHostVariableNames = applyHostStyleVariables(
+        state.hostStyleVariables,
+        this.appliedHostVariableNames
+      );
+    });
+
+    effect(() => {
+      if (!this.bridge.isDevEmulator) {
+        return;
+      }
+
+      const custNum = this.state().custNum;
+      this.devCustNumInput.set(custNum === null ? '' : String(custNum));
+    });
+
     effect(() => {
       const state = this.state();
       if (state.status !== 'authenticating' || state.custNum === null) {
@@ -67,6 +91,27 @@ export class App {
 
       void this.loadCustomer(form, state.custNum);
     });
+  }
+
+  protected onDevCustNumInput(value: string): void {
+    this.devCustNumInput.set(value);
+  }
+
+  protected loadDevCustomer(): void {
+    const rawValue = this.devCustNumInput().trim();
+    const custNum = Number.parseInt(rawValue, 10);
+
+    if (!rawValue || !Number.isInteger(custNum)) {
+      this.bridge.setError('Enter a numeric customer number before loading the form.');
+      return;
+    }
+
+    this.bridge.submitCustomerInput(custNum);
+  }
+
+  protected clearDevCustomer(): void {
+    this.devCustNumInput.set('');
+    this.bridge.clearCustomerInput();
   }
 
   private async ensureAuthenticated(): Promise<void> {

@@ -104,6 +104,54 @@ describe('McpAppBridgeService', () => {
     );
   });
 
+  it('captures host theme and style variables from host context notifications', () => {
+    completeInitializeHandshake();
+
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: {
+          jsonrpc: '2.0',
+          method: 'ui/notifications/host-context-changed',
+          params: {
+            theme: 'dark',
+            styles: {
+              variables: {
+                '--color-background-primary': '#101418',
+                '--color-text-primary': '#f3f4f6'
+              }
+            }
+          }
+        }
+      })
+    );
+
+    expect(service.state().hostTheme).toBe('dark');
+    expect(service.state().hostStyleVariables['--color-background-primary']).toBe('#101418');
+    expect(service.state().hostStyleVariables['--color-text-primary']).toBe('#f3f4f6');
+  });
+
+  it('ignores malformed host context payloads without throwing', () => {
+    completeInitializeHandshake();
+
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: {
+          jsonrpc: '2.0',
+          method: 'ui/notifications/host-context-changed',
+          params: {
+            theme: 'sepia',
+            styles: {
+              variables: 'invalid'
+            }
+          }
+        }
+      })
+    );
+
+    expect(service.state().hostTheme).toBeNull();
+    expect(service.state().hostStyleVariables).toEqual({});
+  });
+
   it('responds to ping and resource teardown requests', () => {
     completeInitializeHandshake();
 

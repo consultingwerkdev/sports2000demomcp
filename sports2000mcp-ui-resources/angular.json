@@ -68,14 +68,23 @@
                   "maximumError": "50MB"
                 }
               ],
+              "define": {
+                "__SPORTS2000_NG_SERVE_EMULATOR__": "false"
+              },
               "outputHashing": "all"
             },
             "development": {
+              "define": {
+                "__SPORTS2000_NG_SERVE_EMULATOR__": "true"
+              },
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
             },
             "mcp": {
+              "define": {
+                "__SPORTS2000_NG_SERVE_EMULATOR__": "false"
+              },
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
