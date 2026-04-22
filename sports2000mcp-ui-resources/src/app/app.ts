@@ -7,12 +7,16 @@ import {
 } from '@consultingwerk/smartcomponent-library';
 import { firstValueFrom } from 'rxjs';
 import { applyDocumentTheme, applyHostStyleVariables, resolveDocumentTheme } from './host-theme-utils';
+import { KendoThemeLoaderService } from './kendo-theme-loader.service';
 import { MCP_APP_BRIDGE, McpAppBridgePort } from './mcp-app-bridge.port';
 import { McpAppStatus } from './mcp-app.types';
 
 const SPORTS2000_SERVICE_URI = 'https://sfrbo.consultingwerkcloud.com:8821';
 const SPORTS2000_FORM_NAME = 'Sports2000Mcp_CustomerForm';
 const CUSTOMER_DATASOURCE_NAME = 'CustomerDataSource';
+declare const __SPORTS2000_ASSET_BASE_URL__: string;
+const ASSET_BASE_URL =
+  typeof __SPORTS2000_ASSET_BASE_URL__ !== 'undefined' ? __SPORTS2000_ASSET_BASE_URL__ : '';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +27,7 @@ const CUSTOMER_DATASOURCE_NAME = 'CustomerDataSource';
 export class App {
   protected readonly authService = inject(SmartAuthenticationService);
   protected readonly serviceAdapter = inject(SmartServiceAdapter);
+  protected readonly kendoThemeLoader = inject(KendoThemeLoaderService);
   protected readonly bridge = inject<McpAppBridgePort>(MCP_APP_BRIDGE);
   protected readonly form = viewChild<SmartFormComponent>('form');
   protected readonly formName = SPORTS2000_FORM_NAME;
@@ -30,6 +35,8 @@ export class App {
   protected readonly state = this.bridge.state;
   protected readonly isDevEmulator = this.bridge.isDevEmulator;
   protected readonly devCustNumInput = signal('');
+  protected readonly loadingLogoUrl = `${ASSET_BASE_URL}cwlogo.png`;
+  protected readonly hasCustomer = computed(() => this.state().status === 'ready');
   protected readonly shouldRenderForm = computed(() => {
     const state = this.state();
     return (
@@ -38,9 +45,9 @@ export class App {
       (state.status === 'loadingCustomer' || state.status === 'ready')
     );
   });
-  protected readonly isLoadingCustomer = computed(() => this.state().status === 'loadingCustomer');
-  protected readonly statusHeadline = computed(() => this.getStatusHeadline(this.state().status));
-  protected readonly statusMessage = computed(() => this.getStatusMessage());
+  protected readonly shellStage = computed(() => this.getShellStage(this.state().status));
+  protected readonly shellTitle = computed(() => this.getShellTitle());
+  protected readonly shellMessage = computed(() => this.getShellMessage());
 
   private readonly authInitialized = signal(false);
   private appliedHostVariableNames = new Set<string>();
@@ -53,6 +60,7 @@ export class App {
       const theme = resolveDocumentTheme(state.hostTheme);
 
       applyDocumentTheme(theme);
+      this.kendoThemeLoader.applyTheme(theme);
       this.appliedHostVariableNames = applyHostStyleVariables(
         state.hostStyleVariables,
         this.appliedHostVariableNames
@@ -112,6 +120,10 @@ export class App {
   protected clearDevCustomer(): void {
     this.devCustNumInput.set('');
     this.bridge.clearCustomerInput();
+  }
+
+  protected onDevCustNumValueChange(value: number | null): void {
+    this.devCustNumInput.set(value === null || Number.isNaN(value) ? '' : String(value));
   }
 
   private async ensureAuthenticated(): Promise<void> {
@@ -214,47 +226,48 @@ export class App {
     };
   }
 
-  private getStatusHeadline(status: McpAppStatus): string {
+  private getShellStage(status: McpAppStatus): 'loading' | 'notFound' | 'error' | 'ready' {
     switch (status) {
-      case 'booting':
-        return 'Connecting to the MCP host';
-      case 'awaitingToolInput':
-        return 'Waiting for a customer request';
-      case 'authenticating':
-        return 'Authenticating with Sports2000';
-      case 'loadingCustomer':
-        return `Loading customer ${this.state().custNum}`;
       case 'notFound':
-        return `Customer ${this.state().custNum} was not found`;
+        return 'notFound';
       case 'error':
-        return 'Unable to open the customer form';
+        return 'error';
       case 'ready':
-        return `Customer ${this.state().custNum}`;
+        return 'ready';
       default:
-        return 'Sports2000 Customer Shell';
+        return 'loading';
     }
   }
 
-  private getStatusMessage(): string {
+  private getShellTitle(): string {
     const state = this.state();
 
-    switch (state.status) {
-      case 'booting':
-        return 'The Angular shell is establishing its MCP Apps connection.';
-      case 'awaitingToolInput':
-        return 'The view is ready. It will stay neutral until an approved show-customer tool call provides a custNum.';
-      case 'authenticating':
-        return 'Signing in with the PoC credentials before loading the Smart Form.';
-      case 'loadingCustomer':
-        return `The Smart Form is fetching customer ${state.custNum} through CustomerDataSource.`;
+    switch (this.shellStage()) {
+      case 'loading':
+        return state.custNum === null ? 'Loading' : `Loading customer ${state.custNum}`;
+      case 'notFound':
+        return `Customer ${state.custNum} was not found`;
+      case 'error':
+        return 'Unable to open the customer form';
+      case 'ready':
+        return `Customer ${state.custNum}`;
+    }
+  }
+
+  private getShellMessage(): string {
+    const state = this.state();
+
+    switch (this.shellStage()) {
+      case 'loading':
+        return state.custNum === null
+          ? 'Preparing the Sports2000 customer shell.'
+          : `Fetching customer ${state.custNum} through CustomerDataSource.`;
       case 'notFound':
         return `The backend returned no record for customer ${state.custNum}.`;
       case 'error':
         return state.errorMessage ?? 'An unexpected error occurred while opening the customer form.';
       case 'ready':
         return 'The customer form is ready.';
-      default:
-        return 'Sports2000 Customer Shell';
     }
   }
 

@@ -35,6 +35,16 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "bootstrap-main.css",
+                "input": "node_modules/@progress/kendo-theme-bootstrap/dist",
+                "output": "kendo-themes"
+              },
+              {
+                "glob": "bootstrap-main-dark.css",
+                "input": "node_modules/@progress/kendo-theme-bootstrap/dist",
+                "output": "kendo-themes"
               }
             ],
             "styles": [
@@ -69,13 +79,15 @@
                 }
               ],
               "define": {
-                "__SPORTS2000_NG_SERVE_EMULATOR__": "false"
+                "__SPORTS2000_NG_SERVE_EMULATOR__": "false",
+                "__SPORTS2000_ASSET_BASE_URL__": "\"\""
               },
               "outputHashing": "all"
             },
             "development": {
               "define": {
-                "__SPORTS2000_NG_SERVE_EMULATOR__": "true"
+                "__SPORTS2000_NG_SERVE_EMULATOR__": "true",
+                "__SPORTS2000_ASSET_BASE_URL__": "\"\""
               },
               "optimization": false,
               "extractLicenses": false,
@@ -83,7 +95,8 @@
             },
             "mcp": {
               "define": {
-                "__SPORTS2000_NG_SERVE_EMULATOR__": "false"
+                "__SPORTS2000_NG_SERVE_EMULATOR__": "false",
+                "__SPORTS2000_ASSET_BASE_URL__": "\"http://localhost:5118/ui-resources/sports2000-customer/\""
               },
               "optimization": false,
               "extractLicenses": false,
@@ -128,6 +141,16 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "bootstrap-main.css",
+                "input": "node_modules/@progress/kendo-theme-bootstrap/dist",
+                "output": "kendo-themes"
+              },
+              {
+                "glob": "bootstrap-main-dark.css",
+                "input": "node_modules/@progress/kendo-theme-bootstrap/dist",
+                "output": "kendo-themes"
               }
             ],
             "styles": [

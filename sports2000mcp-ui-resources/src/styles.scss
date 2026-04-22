@@ -1,33 +1,32 @@
 /* You can add global styles to this file, and also import other style files */
-@use '@progress/kendo-theme-default/scss/all';
+@use '@progress/kendo-font-icons/dist/index.css';
+// :root {
+//   color-scheme: light dark;
+//   --app-shell-bg: var(--color-background-primary, #f5f6f8);
+//   --app-surface-bg: var(--color-background-secondary, rgba(255, 255, 255, 0.96));
+//   --app-surface-elevated: var(--color-background-secondary, rgba(255, 255, 255, 0.99));
+//   --app-overlay: rgba(17, 24, 39, 0.1);
+//   --app-text: var(--color-text-primary, #20252c);
+//   --app-text-muted: var(--color-text-secondary, #5f6b7a);
+//   --app-text-subtle: var(--color-text-secondary, #6f7785);
+//   --app-border: var(--color-border-primary, var(--color-border-default, rgba(17, 24, 39, 0.14)));
+//   --app-accent: var(--color-accent-brand, var(--color-brand-primary, #2563eb));
+//   --app-accent-contrast: #ffffff;
+//   --app-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+// }
 
-:root {
-  color-scheme: light dark;
-  --app-shell-bg: var(--color-background-primary, #f3f4f6);
-  --app-surface-bg: var(--color-background-secondary, rgba(255, 255, 255, 0.94));
-  --app-surface-elevated: var(--color-background-secondary, rgba(255, 255, 255, 0.98));
-  --app-overlay: rgba(17, 24, 39, 0.08);
-  --app-text: var(--color-text-primary, #1f2328);
-  --app-text-muted: var(--color-text-secondary, #5b6472);
-  --app-text-subtle: var(--color-text-secondary, #6b7280);
-  --app-border: var(--color-border-primary, var(--color-border-default, rgba(15, 23, 42, 0.12)));
-  --app-accent: var(--color-accent-brand, var(--color-brand-primary, #2563eb));
-  --app-accent-contrast: #ffffff;
-  --app-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
-}
-
-[data-theme='dark'] {
-  --app-shell-bg: var(--color-background-primary, #1f2328);
-  --app-surface-bg: var(--color-background-secondary, rgba(42, 47, 54, 0.92));
-  --app-surface-elevated: var(--color-background-secondary, rgba(42, 47, 54, 0.98));
-  --app-overlay: rgba(15, 23, 42, 0.34);
-  --app-text: var(--color-text-primary, #f3f4f6);
-  --app-text-muted: var(--color-text-secondary, #d1d5db);
-  --app-text-subtle: var(--color-text-secondary, #c7ccd4);
-  --app-border: var(--color-border-primary, var(--color-border-default, rgba(255, 255, 255, 0.14)));
-  --app-accent: var(--color-accent-brand, var(--color-brand-primary, #60a5fa));
-  --app-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
-}
+// [data-theme='dark'] {
+//   --app-shell-bg: var(--color-background-primary, #1f2328);
+//   --app-surface-bg: var(--color-background-secondary, rgba(43, 48, 56, 0.94));
+//   --app-surface-elevated: var(--color-background-secondary, rgba(43, 48, 56, 0.98));
+//   --app-overlay: rgba(15, 23, 42, 0.36);
+//   --app-text: var(--color-text-primary, #f5f7fa);
+//   --app-text-muted: var(--color-text-secondary, #c8cfd8);
+//   --app-text-subtle: var(--color-text-secondary, #b3bbc5);
+//   --app-border: var(--color-border-primary, var(--color-border-default, rgba(255, 255, 255, 0.14)));
+//   --app-accent: var(--color-accent-brand, var(--color-brand-primary, #6ea8fe));
+//   --app-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+// }
 
 html,
 body {

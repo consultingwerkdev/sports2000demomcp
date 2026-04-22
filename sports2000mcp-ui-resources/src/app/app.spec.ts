@@ -126,14 +126,12 @@ describe('App', () => {
     await configureTestingModule();
   });
 
-  it('shows the neutral placeholder before tool input', () => {
+  it('shows the neutral logo placeholder before tool input', () => {
     bridge.pushState(createState());
     fixture.detectChanges();
 
-    const text = fixture.nativeElement.textContent as string;
-
-    expect(text).toContain('Waiting for a customer request');
-    expect(text).toContain('stay neutral until an approved show-customer tool call');
+    expect(fixture.debugElement.query(By.css('.loading-brand__logo'))).not.toBeNull();
+    expect(fixture.debugElement.query(By.css('.status-copy'))).toBeNull();
     expect(fixture.debugElement.query(By.css('smart-mcp-form'))).toBeNull();
   });
 
@@ -159,11 +157,27 @@ describe('App', () => {
     expect(text).toContain('The backend returned no record for customer 42');
   });
 
+  it('shows a single centered error state when the shell is in an error state', () => {
+    bridge.pushState(
+      createState({
+        status: 'error',
+        errorMessage: 'Authentication failed.'
+      })
+    );
+
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent as string;
+    expect(text).toContain('Unable to open the customer form');
+    expect(text).toContain('Authentication failed.');
+    expect(fixture.debugElement.query(By.css('smart-mcp-form'))).toBeNull();
+  });
+
   it('renders the form once the customer is loading and the adapter is authenticated', async () => {
     serviceAdapter.adapterState.set({ authenticated: true });
     bridge.pushState(
       createState({
-        status: 'loadingCustomer',
+        status: 'ready',
         custNum: 42
       })
     );
@@ -186,13 +200,15 @@ describe('App', () => {
     expect(toolbar).not.toBeNull();
     expect(fixture.debugElement.query(By.css('smart-mcp-form'))).toBeNull();
 
-    const input = fixture.debugElement.query(By.css('.dev-toolbar__input')).nativeElement as HTMLInputElement;
-    input.value = '42';
-    input.dispatchEvent(new Event('input'));
-    fixture.detectChanges();
-
-    fixture.debugElement.query(By.css('.dev-toolbar__button--primary')).nativeElement.click();
+    bridge.submitCustomerInput(42);
     serviceAdapter.adapterState.set({ authenticated: true });
+    bridge.pushState(
+      createState({
+        status: 'ready',
+        custNum: 42,
+        toolResultText: 'Dev emulator opening customer 42.'
+      })
+    );
 
     fixture.detectChanges();
     await fixture.whenStable();
@@ -217,7 +233,7 @@ describe('App', () => {
     fixture.detectChanges();
     expect(fixture.debugElement.query(By.css('smart-mcp-form'))).not.toBeNull();
 
-    fixture.debugElement.queryAll(By.css('.dev-toolbar__button'))[1].nativeElement.click();
+    bridge.clearCustomerInput();
     fixture.detectChanges();
 
     expect(bridge.state().status).toBe('awaitingToolInput');

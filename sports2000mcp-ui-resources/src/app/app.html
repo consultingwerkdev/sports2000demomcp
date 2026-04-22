@@ -1,29 +1,29 @@
 <div class="app-shell">
   @if (isDevEmulator) {
     <header class="dev-toolbar">
-      <div class="dev-toolbar__inner">
-        <label class="dev-toolbar__field">
-          <span>Customer #</span>
-          <input
-            class="dev-toolbar__input"
-            type="number"
-            inputmode="numeric"
-            min="1"
-            [value]="devCustNumInput()"
-            (input)="onDevCustNumInput($any($event.target).value)"
-            (keydown.enter)="loadDevCustomer()"
-          />
-        </label>
+      <kendo-toolbar class="dev-toolbar__bar">
+        <kendo-toolbar-spacer></kendo-toolbar-spacer>
 
-        <div class="dev-toolbar__actions">
-          <button class="dev-toolbar__button dev-toolbar__button--primary" type="button" (click)="loadDevCustomer()">
-            Load customer
-          </button>
-          <button class="dev-toolbar__button" type="button" (click)="clearDevCustomer()">
-            Clear
-          </button>
-        </div>
-      </div>
+        <app-dev-toolbar-customer-tool
+          [value]="devCustNumInput() ? +devCustNumInput() : null"
+          (valueChange)="onDevCustNumValueChange($event)"
+        ></app-dev-toolbar-customer-tool>
+
+        <kendo-toolbar-separator></kendo-toolbar-separator>
+
+        <kendo-toolbar-button
+          text="Load customer"
+          themeColor="primary"
+          fillMode="solid"
+          (click)="loadDevCustomer()"
+        ></kendo-toolbar-button>
+
+        <kendo-toolbar-button
+          text="Clear"
+          fillMode="outline"
+          (click)="clearDevCustomer()"
+        ></kendo-toolbar-button>
+      </kendo-toolbar>
     </header>
   }
 
@@ -31,34 +31,38 @@
     <section class="form-stage">
       <smart-mcp-form class="w-100 h-100" #form [smart-form-layout]="formName"></smart-mcp-form>
 
-      @if (isLoadingCustomer()) {
+      @if (shellStage() === 'loading') {
         <div class="status-overlay">
-          <div class="status-card">
-            <p class="status-label">Sports2000 MCP Shell</p>
-            <h1>{{ statusHeadline() }}</h1>
-            <p>{{ statusMessage() }}</p>
+          <div class="status-shell status-shell--overlay status-shell--loading" aria-live="polite">
+            <div class="loading-brand">
+              <div class="loading-brand__logo-wrap">
+                <img class="loading-brand__logo" [src]="loadingLogoUrl" alt="Consultingwerk" />
+                <div class="loading-brand__shimmer"></div>
+              </div>
+            </div>
           </div>
         </div>
       }
     </section>
   } @else {
     <section class="status-stage">
-      <div class="status-card">
-        <p class="status-label">Sports2000 MCP Shell</p>
-        <h1>{{ statusHeadline() }}</h1>
-        <p>{{ statusMessage() }}</p>
-
-        @if (state().toolResultText) {
-          <div class="status-detail">
-            <span class="detail-label">Tool result</span>
-            <p>{{ state().toolResultText }}</p>
+      <div
+        class="status-shell"
+        [class.status-shell--loading]="shellStage() === 'loading'"
+        [class.status-shell--error]="shellStage() === 'error'"
+        [attr.aria-live]="shellStage() === 'loading' ? 'polite' : 'assertive'"
+      >
+        <div class="loading-brand">
+          <div class="loading-brand__logo-wrap">
+            <img class="loading-brand__logo" [src]="loadingLogoUrl" alt="Consultingwerk" />
+            <div class="loading-brand__shimmer"></div>
           </div>
-        }
+        </div>
 
-        @if (state().lastHostContext) {
-          <div class="status-detail">
-            <span class="detail-label">Host context received</span>
-            <p>The host supplied additional context and the shell is tracking it for later iterations.</p>
+        @if (shellStage() !== 'loading') {
+          <div class="status-copy">
+            <h1 class="status-copy__title">{{ shellTitle() }}</h1>
+            <p class="status-copy__message">{{ shellMessage() }}</p>
           </div>
         }
       </div>
