@@ -78,33 +78,30 @@
                   "maximumError": "50MB"
                 }
               ],
-              "define": {
-                "__SPORTS2000_NG_SERVE_EMULATOR__": "false",
-                "__SPORTS2000_ASSET_BASE_URL__": "\"\""
-              },
               "outputHashing": "all"
             },
             "development": {
-              "define": {
-                "__SPORTS2000_NG_SERVE_EMULATOR__": "true",
-                "__SPORTS2000_ASSET_BASE_URL__": "\"\""
-              },
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ],
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
             },
             "mcp": {
-              "define": {
-                "__SPORTS2000_NG_SERVE_EMULATOR__": "false",
-                "__SPORTS2000_ASSET_BASE_URL__": "\"http://localhost:5118/ui-resources/sports2000-customer/\""
-              },
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.mcp.ts"
+                }
+              ],
               "outputHashing": "none",
               "deployUrl": "http://localhost:5118/ui-resources/sports2000-customer/",
               "outputPath": {
-                "base": "../sports2000mcpserverweb/wwwroot/ui-resources/sports2000-customer",
+                "base": "../Consultingwerk.Sports2000DemoTools/wwwroot/ui-resources/sports2000-customer",
                 "browser": "",
                 "media": "media"
               }

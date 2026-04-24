@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\sports2000mcpserverweb\wwwroot\ui-resources\sports2000-customer\**\*">
+    <Content Include="wwwroot\ui-resources\sports2000-customer\**\*">
       <Link>wwwroot\ui-resources\sports2000-customer\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

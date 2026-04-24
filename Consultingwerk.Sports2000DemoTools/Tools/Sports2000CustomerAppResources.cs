@@ -80,8 +80,8 @@ public sealed class Sports2000CustomerAppResources
         var appBaseDirectory = AppContext.BaseDirectory;
         yield return Path.GetFullPath(Path.Combine(appBaseDirectory, AngularIndexRelativePath));
         yield return Path.GetFullPath(Path.Combine(appBaseDirectory, "..", "..", "..", AngularIndexRelativePath));
-        yield return Path.GetFullPath(Path.Combine(appBaseDirectory, "..", "..", "..", "..", "sports2000mcpserverweb", AngularIndexRelativePath));
-        yield return Path.GetFullPath(Path.Combine(appBaseDirectory, "..", "..", "..", "..", "..", "sports2000mcpserverweb", AngularIndexRelativePath));
+        yield return Path.GetFullPath(Path.Combine(appBaseDirectory, "..", "..", "..", "..", "Consultingwerk.Sports2000DemoTools", AngularIndexRelativePath));
+        yield return Path.GetFullPath(Path.Combine(appBaseDirectory, "..", "..", "..", "..", "..", "Consultingwerk.Sports2000DemoTools", AngularIndexRelativePath));
     }
 
     private static FileNotFoundException CreateMissingBuildException()

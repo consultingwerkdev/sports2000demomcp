@@ -56,32 +56,58 @@ app-root {
   box-sizing: border-box;
 }
 
-.mcp-shell-fallback__card {
-  max-width: 640px;
-  padding: 32px;
-  border: 1px solid var(--app-border);
-  border-radius: 24px;
-  background: var(--app-surface-elevated);
-  box-shadow: var(--app-shadow);
+.mcp-shell-fallback__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
 }
 
-.mcp-shell-fallback__eyebrow {
-  margin: 0 0 12px;
-  color: var(--app-text-subtle);
-  letter-spacing: 0.12em;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
+.mcp-shell-fallback__logo-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 14px;
 }
 
-.mcp-shell-fallback__title {
-  margin: 0 0 12px;
-  font-size: 32px;
-  line-height: 1.1;
+.mcp-shell-fallback__logo {
+  width: min(280px, 58vw);
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 1;
 }
 
-.mcp-shell-fallback__body {
+.mcp-shell-fallback__shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 35%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0.1) 65%,
+    transparent 100%
+  );
+  transform: translateX(-140%);
+  animation: mcp-shell-fallback-shimmer 1.8s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.mcp-shell-fallback__loading {
   margin: 0;
   color: var(--app-text-muted);
-  line-height: 1.6;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+@keyframes mcp-shell-fallback-shimmer {
+  100% {
+    transform: translateX(140%);
+  }
 }

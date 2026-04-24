@@ -8,9 +8,9 @@ import {
   SmartSessionManagerService
 } from '@consultingwerk/smartcomponent-library';
 import { App } from './app';
-import { MCP_APP_BRIDGE, McpAppBridgePort } from './mcp-app-bridge.port';
-import { McpAppViewState } from './mcp-app.types';
-import { McpUiAuthPayload } from './mcp-ui-auth.types';
+import { MCP_APP_BRIDGE, McpAppBridgePort } from './bridge/mcp-app-bridge.port';
+import { McpAppViewState } from './bridge/mcp-app.types';
+import { McpUiAuthPayload } from './auth/mcp-ui-auth.types';
 
 const createState = (overrides: Partial<McpAppViewState> = {}): McpAppViewState => ({
   status: 'awaitingToolInput',
