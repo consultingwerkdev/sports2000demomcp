@@ -1,6 +1,6 @@
 import { DestroyRef, Injectable, effect, inject, signal } from '@angular/core';
 import { McpAppBridgePort } from './mcp-app-bridge.port';
-import { McpAppStatus, McpAppViewState, McpUiTheme } from './mcp-app.types';
+import { McpAppStatus, McpAppViewState, McpToolArguments, McpUiTheme } from './mcp-app.types';
 import { McpUiAuthPayload } from '../auth/mcp-ui-auth.types';
 
 type JsonRpcId = number;
@@ -26,7 +26,7 @@ interface PendingRequest {
 
 const INITIAL_STATE: McpAppViewState = {
   status: 'booting',
-  custNum: null,
+  toolArguments: null,
   toolResultText: null,
   lastHostContext: null,
   hostTheme: null,
@@ -91,20 +91,20 @@ export class McpAppBridgeService implements McpAppBridgePort {
     }
 
     this.patchState({
-      status: this.stateSignal().custNum === null ? 'awaitingToolInput' : 'authenticating',
+      status: this.stateSignal().toolArguments === null ? 'awaitingToolInput' : 'authenticating',
       errorMessage: null
     });
   }
 
-  submitCustomerInput(custNum: number): void {
-    this.startCustomerFlow(custNum, null);
+  submitToolArguments(argumentsRecord: McpToolArguments): void {
+    this.startToolFlow(argumentsRecord, null);
   }
 
-  clearCustomerInput(): void {
+  clearToolArguments(): void {
     this.uiAuthSignal.set(null);
     this.patchState({
       status: 'awaitingToolInput',
-      custNum: null,
+      toolArguments: null,
       toolResultText: null,
       errorMessage: null
     });
@@ -219,7 +219,7 @@ export class McpAppBridgeService implements McpAppBridgePort {
         this.uiAuthSignal.set(null);
         this.patchState({
           status: 'awaitingToolInput',
-          custNum: null,
+          toolArguments: null,
           toolResultText: this.extractCancellationReason(params),
           errorMessage: null
         });
@@ -237,18 +237,18 @@ export class McpAppBridgeService implements McpAppBridgePort {
   }
 
   private handleToolInput(params: unknown): void {
-    const custNum = this.extractCustNum(params);
+    const toolArguments = this.extractToolArguments(params);
     this.uiAuthSignal.set(null);
-    if (custNum === null) {
+    if (!toolArguments) {
       this.setError('The show-customer tool requires a numeric custNum input.');
       this.patchState({
-        custNum: null,
+        toolArguments: null,
         toolResultText: null
       });
       return;
     }
 
-    this.startCustomerFlow(custNum, null);
+    this.startToolFlow(toolArguments, null);
   }
 
   private handleHostContextChanged(params: unknown): void {
@@ -341,30 +341,34 @@ export class McpAppBridgeService implements McpAppBridgePort {
     }));
   }
 
-  private startCustomerFlow(custNum: number, toolResultText: string | null): void {
+  private startToolFlow(toolArguments: McpToolArguments, toolResultText: string | null): void {
     this.patchState({
       status: 'authenticating',
-      custNum,
+      toolArguments,
       toolResultText,
       errorMessage: null
     });
   }
 
-  private extractCustNum(params: unknown): number | null {
+  private extractToolArguments(params: unknown): McpToolArguments | null {
     const argumentsRecord =
       this.asRecord(this.asRecord(params)?.['arguments']) ??
       this.asRecord(params);
 
-    const rawCustNum = argumentsRecord?.['custNum'];
+    if (!argumentsRecord) {
+      return null;
+    }
+
+    const rawCustNum = argumentsRecord['custNum'];
 
     if (typeof rawCustNum === 'number' && Number.isInteger(rawCustNum)) {
-      return rawCustNum;
+      return { custNum: rawCustNum };
     }
 
     if (typeof rawCustNum === 'string') {
       const parsedCustNum = Number.parseInt(rawCustNum, 10);
       if (Number.isInteger(parsedCustNum)) {
-        return parsedCustNum;
+        return { custNum: parsedCustNum };
       }
     }
 

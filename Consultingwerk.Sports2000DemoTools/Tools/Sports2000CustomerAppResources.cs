@@ -1,10 +1,11 @@
 using ModelContextProtocol.Protocol;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 
 public sealed class Sports2000CustomerAppResources
 {
-    public const string ShowCustomerResourceUri = "ui://sports2000/customer/show-customer.html";
+    private const string ShowCustomerResourceUriPrefix = "ui://sports2000/customer/show-customer.";
+    private const string ShowCustomerResourceUriSuffix = ".html";
+    private const string AssetPathPrefix = "/ui-resources/sports2000-customer/";
     public const string ShowCustomerResourceName = "Sports2000 Show Customer";
     public const string ShowCustomerResourceMimeType = "text/html;profile=mcp-app";
 
@@ -17,13 +18,23 @@ public sealed class Sports2000CustomerAppResources
     {
         var angularIndexPath = ResolveAngularIndexPath()
             ?? throw CreateMissingBuildException();
+        var buildVersion = ResolveBuildVersion(angularIndexPath);
+        var html = File.ReadAllText(angularIndexPath);
 
         return new TextResourceContents
         {
-            Uri = ShowCustomerResourceUri,
+            Uri = BuildVersionedResourceUri(buildVersion),
             MimeType = ShowCustomerResourceMimeType,
-            Text = AppendBuildVersionToUiAssetUrls(File.ReadAllText(angularIndexPath), angularIndexPath)
+            Text = RewriteShellAssetUrls(html)
         };
+    }
+
+    public static string GetShowCustomerResourceUri()
+    {
+        var angularIndexPath = ResolveAngularIndexPath()
+            ?? throw CreateMissingBuildException();
+
+        return BuildVersionedResourceUri(ResolveBuildVersion(angularIndexPath));
     }
 
     public static string? ResolveAngularAssetDirectory()
@@ -94,26 +105,6 @@ public sealed class Sports2000CustomerAppResources
             $"The Sports2000 MCP Angular build output was not found. Expected '{AngularIndexRelativePath}'. Checked:{Environment.NewLine}{expectedPaths}");
     }
 
-    private static string AppendBuildVersionToUiAssetUrls(string html, string angularIndexPath)
-    {
-        var buildVersion = ResolveBuildVersion(angularIndexPath);
-
-        return Regex.Replace(
-            html,
-            "(?<attribute>\\b(?:href|src)=\")(?<url>[^\"]*/ui-resources/sports2000-customer/[^\"]+\\.(?:css|js))(?<suffix>\")",
-            match =>
-            {
-                var url = match.Groups["url"].Value;
-                if (url.Contains('?'))
-                {
-                    return match.Value;
-                }
-
-                return $"{match.Groups["attribute"].Value}{url}?v={buildVersion}{match.Groups["suffix"].Value}";
-            },
-            RegexOptions.IgnoreCase);
-    }
-
     private static long ResolveBuildVersion(string angularIndexPath)
     {
         var buildDirectory = Path.GetDirectoryName(angularIndexPath);
@@ -130,5 +121,19 @@ public sealed class Sports2000CustomerAppResources
             .Select(path => File.GetLastWriteTimeUtc(path).Ticks)
             .DefaultIfEmpty(File.GetLastWriteTimeUtc(angularIndexPath).Ticks)
             .Max();
+    }
+
+    private static string BuildVersionedResourceUri(long buildVersion)
+    {
+        return $"{ShowCustomerResourceUriPrefix}{buildVersion}{ShowCustomerResourceUriSuffix}";
+    }
+
+    private static string RewriteShellAssetUrls(string html)
+    {
+        var assetBaseUrl = $"{LocalHttpOrigin}{AssetPathPrefix}";
+
+        return html
+            .Replace("href=\"favicon.ico\"", $"href=\"{assetBaseUrl}favicon.ico\"", StringComparison.Ordinal)
+            .Replace("src=\"cwlogo.png\"", $"src=\"{assetBaseUrl}cwlogo.png\"", StringComparison.Ordinal);
     }
 }

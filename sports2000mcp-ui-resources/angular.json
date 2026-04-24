@@ -98,7 +98,6 @@
                   "with": "src/environments/environment.mcp.ts"
                 }
               ],
-              "outputHashing": "none",
               "deployUrl": "http://localhost:5118/ui-resources/sports2000-customer/",
               "outputPath": {
                 "base": "../Consultingwerk.Sports2000DemoTools/wwwroot/ui-resources/sports2000-customer",

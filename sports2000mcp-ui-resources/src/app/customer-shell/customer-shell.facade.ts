@@ -1,11 +1,5 @@
 import { Injectable, Signal, computed, effect, inject, signal } from '@angular/core';
-import {
-  SmartFilterDescriptor,
-  SmartFormComponent,
-  SmartServiceAdapter,
-  SmartSessionManagerService
-} from '@consultingwerk/smartcomponent-library';
-import { firstValueFrom } from 'rxjs';
+import { SmartServiceAdapter, SmartSessionManagerService } from '@consultingwerk/smartcomponent-library';
 import { environment } from '../../environments/environment';
 import { Sports2000AuthFacade } from '../auth/sports2000-auth.facade';
 import { MCP_APP_BRIDGE, McpAppBridgePort } from '../bridge/mcp-app-bridge.port';
@@ -25,10 +19,8 @@ export class CustomerShellFacade {
   private readonly authFacade = inject(Sports2000AuthFacade);
   private readonly kendoThemeLoader = inject(KendoThemeLoaderService);
 
-  private readonly formSignal = signal<SmartFormComponent | null>(null);
   private readonly devCustNumInputSignal = signal('');
   private appliedHostVariableNames = new Set<string>();
-  private customerLoadToken = 0;
 
   readonly formName = environment.app.formName;
   readonly loadingLogoUrl = `${environment.app.assetBaseUrl}cwlogo.png`;
@@ -41,12 +33,12 @@ export class CustomerShellFacade {
     const state = this.state();
     return (
       this.serviceAdapter.stateSignal().authenticated &&
-      state.custNum !== null &&
-      (state.status === 'loadingCustomer' || state.status === 'ready')
+      state.toolArguments !== null &&
+      (state.status === 'loadingForm' || state.status === 'ready')
     );
   });
 
-  readonly shouldShowLoadingLogo = computed(() => !this.shouldRenderForm());
+  readonly shouldShowLoadingLogo = computed(() => this.getShellStage(this.state().status) === 'loading');
   readonly shellStage = computed(() => this.getShellStage(this.state().status));
   readonly shellTitle = computed(() => this.getShellTitle());
   readonly shellMessage = computed(() => this.getShellMessage());
@@ -69,13 +61,13 @@ export class CustomerShellFacade {
         return;
       }
 
-      const custNum = this.state().custNum;
+      const custNum = this.extractCustNum(this.state().toolArguments);
       this.devCustNumInputSignal.set(custNum === null ? '' : String(custNum));
     });
 
     effect(() => {
       const state = this.state();
-      if (state.status !== 'authenticating' || state.custNum === null) {
+      if (state.status !== 'authenticating' || state.toolArguments === null) {
         return;
       }
 
@@ -85,26 +77,9 @@ export class CustomerShellFacade {
 
       void this.authFacade.ensureAuthenticatedForState(state);
     });
-
-    effect(() => {
-      const state = this.state();
-      const form = this.formSignal();
-      if (
-        !form ||
-        !this.serviceAdapter.stateSignal().authenticated ||
-        state.status !== 'loadingCustomer' ||
-        state.custNum === null
-      ) {
-        return;
-      }
-
-      void this.loadCustomer(form, state.custNum);
-    });
   }
 
-  setForm(form: SmartFormComponent | undefined): void {
-    this.formSignal.set(form ?? null);
-  }
+  setForm(): void {}
 
   onDevCustNumInput(value: string): void {
     this.devCustNumInputSignal.set(value);
@@ -123,122 +98,29 @@ export class CustomerShellFacade {
       return;
     }
 
-    this.bridge.submitCustomerInput(custNum);
+    this.bridge.submitToolArguments({ custNum });
   }
 
   clearDevCustomer(): void {
     this.devCustNumInputSignal.set('');
-    this.bridge.clearCustomerInput();
+    this.bridge.clearToolArguments();
   }
 
-  private async loadCustomer(form: SmartFormComponent, custNum: number): Promise<void> {
-    const loadToken = ++this.customerLoadToken;
+  private extractCustNum(toolArguments: Record<string, unknown> | null): number | null {
+    const rawCustNum = toolArguments?.['custNum'];
 
-    try {
-      const customerDataSource$ = form.getFormDatasourceAsObservable(
-        environment.app.customerDatasourceName
-      );
-      if (!customerDataSource$) {
-        this.bridge.setError(
-          `The customer form does not expose a ${environment.app.customerDatasourceName} datasource.`
-        );
-        return;
-      }
-
-      const customerDataSource = await firstValueFrom(customerDataSource$);
-      const result = await customerDataSource.fetch({
-        top: 1,
-        skip: 0,
-        filter: this.createCustomerFilter(custNum)
-      });
-
-      if (loadToken !== this.customerLoadToken || this.state().custNum !== custNum) {
-        return;
-      }
-
-      if (result.data.length === 1) {
-        this.bridge.setStatus('ready');
-        return;
-      }
-
-      if (result.data.length === 0) {
-        this.bridge.setStatus('notFound');
-        return;
-      }
-
-      this.bridge.setError(`Customer lookup for ${custNum} returned multiple records.`);
-    } catch (error) {
-      if (loadToken !== this.customerLoadToken) {
-        return;
-      }
-
-      this.bridge.setError(this.toErrorMessage(error, `Unable to load customer ${custNum}.`));
-    }
+    return typeof rawCustNum === 'number' && Number.isInteger(rawCustNum) ? rawCustNum : null;
   }
 
-  private createCustomerFilter(custNum: number): SmartFilterDescriptor {
-    return {
-      logic: 'and',
-      filters: [
-        {
-          field: 'CustNum',
-          operator: 'eq',
-          value: custNum
-        }
-      ]
-    };
-  }
-
-  private getShellStage(status: McpAppStatus): 'loading' | 'notFound' | 'error' | 'ready' {
-    switch (status) {
-      case 'notFound':
-        return 'notFound';
-      case 'error':
-        return 'error';
-      case 'ready':
-        return 'ready';
-      default:
-        return 'loading';
-    }
+  private getShellStage(status: McpAppStatus): 'loading' | 'error' {
+    return status === 'error' ? 'error' : 'loading';
   }
 
   private getShellTitle(): string {
-    const state = this.state();
-
-    switch (this.shellStage()) {
-      case 'loading':
-        return state.custNum === null ? 'Loading' : `Loading customer ${state.custNum}`;
-      case 'notFound':
-        return `Customer ${state.custNum} was not found`;
-      case 'error':
-        return 'Unable to open the customer form';
-      case 'ready':
-        return `Customer ${state.custNum}`;
-    }
+    return 'Unable to open the form';
   }
 
   private getShellMessage(): string {
-    const state = this.state();
-
-    switch (this.shellStage()) {
-      case 'loading':
-        return state.custNum === null
-          ? 'Preparing the Sports2000 customer shell.'
-          : `Fetching customer ${state.custNum} through ${environment.app.customerDatasourceName}.`;
-      case 'notFound':
-        return `The backend returned no record for customer ${state.custNum}.`;
-      case 'error':
-        return state.errorMessage ?? 'An unexpected error occurred while opening the customer form.';
-      case 'ready':
-        return 'The customer form is ready.';
-    }
-  }
-
-  private toErrorMessage(error: unknown, fallback: string): string {
-    if (error instanceof Error && error.message) {
-      return error.message;
-    }
-
-    return fallback;
+    return this.state().errorMessage ?? 'An unexpected error occurred while opening the form.';
   }
 }

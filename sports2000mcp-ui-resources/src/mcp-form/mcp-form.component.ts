@@ -4,6 +4,7 @@ import { DataSourceRegistry, SmartViewManagerService, SmartFormInstanceService, 
 @Component({
 	selector: 'smart-mcp-form',
 	templateUrl: './mcp-form.component.html',
+	styleUrls: ['./mcp-form.component.css'],
 	providers: [
 		DataSourceRegistry,
 		SmartViewManagerService,

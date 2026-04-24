@@ -19,10 +19,11 @@
 --------------------------------------------------------------------------
 -->
 <div class="smart-form-root">
-    <div #container>
+    <div #container class="smart-mcp-form__container">
         @if(!!_formConfigurationSignal()) {
             <div 
                 #root
+                class="smart-mcp-form__content"
                 kendoRippleContainer
                 [disabled]="!_enableRippleEffectSignal()"
                 [ngClass]="_formConfigurationSignal().settings?.classList || ''">

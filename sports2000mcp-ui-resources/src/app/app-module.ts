@@ -1,4 +1,5 @@
 import { Injector, NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing-module';
@@ -7,7 +8,9 @@ import { environment } from '../environments/environment';
 import {
   provideSmartComponentLibrary,
   SMART_AUTHENTICATION_STRATEGY,
-  SmartComponentLibraryModule
+  SmartFormLayoutService,
+  SmartComponentLibraryModule,
+  withLogicClasses
 } from '@consultingwerk/smartcomponent-library';
 import { McpFormComponent } from '../mcp-form/mcp-form.component';
 import { DialogsModule } from '@progress/kendo-angular-dialog';
@@ -20,6 +23,9 @@ import { McpBearerAuthenticationStrategy } from './auth/mcp-bearer-auth.strategy
 import { DevMcpAppBridgeService } from './bridge/dev-mcp-app-bridge.service';
 import { MCP_APP_BRIDGE } from './bridge/mcp-app-bridge.port';
 import { McpAppBridgeService } from './bridge/mcp-app-bridge.service';
+import { Sports2000McpShowCustomerFormLogic } from './form-logic-classes/show-customer/show-customer-logic';
+import { SmartMcpCacheBustingInterceptor } from './core/http/smart-mcp-cache-busting.interceptor';
+import { SmartMcpFormLayoutService } from './core/http/smart-mcp-form-layout.service';
 
 @NgModule({
   declarations: [
@@ -40,9 +46,12 @@ import { McpAppBridgeService } from './bridge/mcp-app-bridge.service';
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideSmartComponentLibrary({
-      serviceURI: environment.app.smartComponentLibraryServiceUri
-    }),
+    provideSmartComponentLibrary(
+      {
+        serviceURI: environment.app.smartComponentLibraryServiceUri
+      },
+      withLogicClasses([Sports2000McpShowCustomerFormLogic])
+    ),
     {
       provide: MCP_APP_BRIDGE,
       useFactory: (injector: Injector) =>
@@ -55,6 +64,15 @@ import { McpAppBridgeService } from './bridge/mcp-app-bridge.service';
       provide: SMART_AUTHENTICATION_STRATEGY,
       useClass: McpBearerAuthenticationStrategy,
       multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: SmartMcpCacheBustingInterceptor,
+      multi: true
+    },
+    {
+      provide: SmartFormLayoutService,
+      useClass: SmartMcpFormLayoutService
     }
   ],
   bootstrap: [App]

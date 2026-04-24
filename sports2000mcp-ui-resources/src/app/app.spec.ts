@@ -1,7 +1,6 @@
 import { Component, Input, NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { of } from 'rxjs';
 import {
   SmartAuthenticationService,
   SmartServiceAdapter,
@@ -14,7 +13,7 @@ import { McpUiAuthPayload } from './auth/mcp-ui-auth.types';
 
 const createState = (overrides: Partial<McpAppViewState> = {}): McpAppViewState => ({
   status: 'awaitingToolInput',
-  custNum: null,
+  toolArguments: null,
   toolResultText: null,
   lastHostContext: null,
   hostTheme: 'light',
@@ -64,17 +63,18 @@ class MockMcpAppBridgeService implements McpAppBridgePort {
     }));
   }
 
-  submitCustomerInput(custNum: number): void {
+  submitToolArguments(argumentsRecord: Record<string, unknown>): void {
+    const custNum = argumentsRecord['custNum'];
     this.stateSource.update((state) => ({
       ...state,
       status: 'authenticating',
-      custNum,
+      toolArguments: { ...argumentsRecord },
       toolResultText: `Dev emulator opening customer ${custNum}.`,
       errorMessage: null
     }));
   }
 
-  clearCustomerInput(): void {
+  clearToolArguments(): void {
     this.stateSource.set(createState());
     this.uiAuthSource.set(null);
   }
@@ -118,17 +118,6 @@ class MockSmartSessionManagerService {
 })
 class FakeMcpFormComponent {
   @Input('smart-form-layout') formLayout = '';
-
-  readonly fetch = jasmine.createSpy('fetch').and.resolveTo({
-    data: [{ CustNum: 42 }],
-    total: 1
-  });
-
-  getFormDatasourceAsObservable() {
-    return of({
-      fetch: this.fetch
-    });
-  }
 }
 
 describe('App', () => {
@@ -177,16 +166,17 @@ describe('App', () => {
   it('shows a not found state with the requested customer number', () => {
     bridge.pushState(
       createState({
-        status: 'notFound',
-        custNum: 42
+        status: 'error',
+        toolArguments: { custNum: 42 },
+        errorMessage: 'Customer 42 was not found.'
       })
     );
 
     fixture.detectChanges();
 
     const text = fixture.nativeElement.textContent as string;
-    expect(text).toContain('Customer 42 was not found');
-    expect(text).toContain('The backend returned no record for customer 42');
+    expect(text).toContain('Unable to open the form');
+    expect(text).toContain('Customer 42 was not found.');
   });
 
   it('shows a single centered error state when the shell is in an error state', () => {
@@ -200,7 +190,7 @@ describe('App', () => {
     fixture.detectChanges();
 
     const text = fixture.nativeElement.textContent as string;
-    expect(text).toContain('Unable to open the customer form');
+    expect(text).toContain('Unable to open the form');
     expect(text).toContain('Authentication failed.');
     expect(fixture.debugElement.query(By.css('smart-mcp-form'))).toBeNull();
   });
@@ -209,8 +199,8 @@ describe('App', () => {
     serviceAdapter.adapterState.set({ authenticated: true });
     bridge.pushState(
       createState({
-        status: 'loadingCustomer',
-        custNum: 42
+        status: 'loadingForm',
+        toolArguments: { custNum: 42 }
       })
     );
 
@@ -234,12 +224,12 @@ describe('App', () => {
     expect(toolbar).not.toBeNull();
     expect(fixture.debugElement.query(By.css('smart-mcp-form'))).toBeNull();
 
-    bridge.submitCustomerInput(42);
+    bridge.submitToolArguments({ custNum: 42 });
     serviceAdapter.adapterState.set({ authenticated: true });
     bridge.pushState(
       createState({
         status: 'ready',
-        custNum: 42,
+        toolArguments: { custNum: 42 },
         toolResultText: 'Dev emulator opening customer 42.'
       })
     );
@@ -249,14 +239,14 @@ describe('App', () => {
     fixture.detectChanges();
 
     expect(fixture.debugElement.query(By.css('smart-mcp-form'))).not.toBeNull();
-    expect(bridge.state().custNum).toBe(42);
+    expect(bridge.state().toolArguments?.['custNum']).toBe(42);
   });
 
   it('waits for MCP host ui auth before authenticating in real host mode', async () => {
     bridge.pushState(
       createState({
         status: 'authenticating',
-        custNum: 42
+        toolArguments: { custNum: 42 }
       })
     );
 
@@ -273,7 +263,7 @@ describe('App', () => {
     bridge.pushState(
       createState({
         status: 'authenticating',
-        custNum: 42
+        toolArguments: { custNum: 42 }
       })
     );
 
@@ -299,7 +289,7 @@ describe('App', () => {
     bridge.pushState(
       createState({
         status: 'authenticating',
-        custNum: 42
+        toolArguments: { custNum: 42 }
       })
     );
 
@@ -329,7 +319,7 @@ describe('App', () => {
     bridge.pushState(
       createState({
         status: 'ready',
-        custNum: 42
+        toolArguments: { custNum: 42 }
       })
     );
     serviceAdapter.adapterState.set({ authenticated: true });
@@ -337,11 +327,11 @@ describe('App', () => {
     fixture.detectChanges();
     expect(fixture.debugElement.query(By.css('smart-mcp-form'))).not.toBeNull();
 
-    bridge.clearCustomerInput();
+    bridge.clearToolArguments();
     fixture.detectChanges();
 
     expect(bridge.state().status).toBe('awaitingToolInput');
-    expect(bridge.state().custNum).toBeNull();
+    expect(bridge.state().toolArguments).toBeNull();
     expect(fixture.debugElement.query(By.css('smart-mcp-form'))).toBeNull();
   });
 });

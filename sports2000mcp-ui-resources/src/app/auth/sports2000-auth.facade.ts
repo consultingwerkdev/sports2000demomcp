@@ -36,10 +36,10 @@ export class Sports2000AuthFacade {
 
     if (
       this.serviceAdapter.stateSignal().authenticated &&
-      state.custNum !== null &&
+      state.toolArguments !== null &&
       state.status === 'authenticating'
     ) {
-      this.bridge.setStatus('loadingCustomer');
+      this.bridge.setStatus('loadingForm');
       return;
     }
 
@@ -82,8 +82,8 @@ export class Sports2000AuthFacade {
 
       await this.serviceAdapter.login();
 
-      if (state.custNum !== null && this.bridge.state().status === 'authenticating') {
-        this.bridge.setStatus('loadingCustomer');
+      if (state.toolArguments !== null && this.bridge.state().status === 'authenticating') {
+        this.bridge.setStatus('loadingForm');
       }
     } catch (error) {
       this.bridge.setError(this.toErrorMessage(error, 'Authentication failed.'));

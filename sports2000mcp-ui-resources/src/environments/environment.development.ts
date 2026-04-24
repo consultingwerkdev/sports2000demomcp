@@ -8,7 +8,7 @@ export const environment: { production: boolean; app: Sports2000AppConfig } = {
   app: {
     mode: 'dev-emulator',
     assetBaseUrl: '',
-    smartComponentLibraryServiceUri: SPORTS2000_KEYCLOAK_SERVICE_URI,
+    smartComponentLibraryServiceUri: SPORTS2000_SERVICE_URI,
     smartServiceUri: SPORTS2000_SERVICE_URI,
     keycloakServiceUri: SPORTS2000_KEYCLOAK_SERVICE_URI,
     formName: 'Sports2000Mcp_CustomerForm',

@@ -1,11 +1,11 @@
 import { Injectable, signal } from '@angular/core';
 import { McpAppBridgePort } from './mcp-app-bridge.port';
-import { McpAppStatus, McpAppViewState } from './mcp-app.types';
+import { McpAppStatus, McpAppViewState, McpToolArguments } from './mcp-app.types';
 import { McpUiAuthPayload } from '../auth/mcp-ui-auth.types';
 
 const INITIAL_DEV_STATE: McpAppViewState = {
   status: 'awaitingToolInput',
-  custNum: null,
+  toolArguments: null,
   toolResultText: null,
   lastHostContext: null,
   hostTheme: 'light',
@@ -43,29 +43,30 @@ export class DevMcpAppBridgeService implements McpAppBridgePort {
     }
 
     this.patchState({
-      status: this.stateSignal().custNum === null ? 'awaitingToolInput' : 'authenticating',
+      status: this.stateSignal().toolArguments === null ? 'awaitingToolInput' : 'authenticating',
       errorMessage: null
     });
   }
 
-  submitCustomerInput(custNum: number): void {
-    if (!Number.isInteger(custNum)) {
+  submitToolArguments(argumentsRecord: McpToolArguments): void {
+    const custNum = this.extractCustNum(argumentsRecord);
+    if (custNum === null) {
       this.setError('The show-customer tool requires a numeric custNum input.');
       return;
     }
 
     this.patchState({
       status: 'authenticating',
-      custNum,
+      toolArguments: { custNum },
       toolResultText: `Dev emulator opening customer ${custNum}.`,
       errorMessage: null
     });
   }
 
-  clearCustomerInput(): void {
+  clearToolArguments(): void {
     this.patchState({
       status: 'awaitingToolInput',
-      custNum: null,
+      toolArguments: null,
       toolResultText: null,
       errorMessage: null
     });
@@ -82,5 +83,22 @@ export class DevMcpAppBridgeService implements McpAppBridgePort {
       ...state,
       ...patch
     }));
+  }
+
+  private extractCustNum(argumentsRecord: McpToolArguments): number | null {
+    const rawCustNum = argumentsRecord['custNum'];
+
+    if (typeof rawCustNum === 'number' && Number.isInteger(rawCustNum)) {
+      return rawCustNum;
+    }
+
+    if (typeof rawCustNum === 'string') {
+      const parsedCustNum = Number.parseInt(rawCustNum, 10);
+      if (Number.isInteger(parsedCustNum)) {
+        return parsedCustNum;
+      }
+    }
+
+    return null;
   }
 }

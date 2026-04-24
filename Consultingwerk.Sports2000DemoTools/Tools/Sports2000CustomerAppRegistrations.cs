@@ -19,7 +19,7 @@ public static class Sports2000CustomerAppRegistrations
                 Name = "show-customer",
                 Title = "Show Customer",
                 Description = ShowCustomerDescription,
-                Meta = CreateToolMeta(Sports2000CustomerAppResources.ShowCustomerResourceUri),
+                Meta = CreateToolMeta(Sports2000CustomerAppResources.GetShowCustomerResourceUri()),
                 Services = services
             });
 
@@ -45,7 +45,7 @@ public static class Sports2000CustomerAppRegistrations
                 Title = "Sports2000 Show Customer",
                 Description = ShowCustomerResourceDescription,
                 MimeType = Sports2000CustomerAppResources.ShowCustomerResourceMimeType,
-                UriTemplate = Sports2000CustomerAppResources.ShowCustomerResourceUri,
+                UriTemplate = Sports2000CustomerAppResources.GetShowCustomerResourceUri(),
                 Meta = Sports2000CustomerAppResources.CreateUiMeta()
             });
     }

@@ -31,36 +31,42 @@
       </kendo-toolbar>
     </header>
   }
-  @if (shouldRenderForm()) {
-    <section class="form-stage">
-      <smart-mcp-form class="w-100 h-100" #form [smart-form-layout]="formName"></smart-mcp-form>
-    </section>
-  } @else {
-    <section class="status-stage">
-      <div
-        class="status-shell"
-        [class.status-shell--loading]="shellStage() === 'loading'"
-        [class.status-shell--error]="shellStage() === 'error'"
-        [attr.aria-live]="shellStage() === 'loading' ? 'polite' : 'assertive'"
-      >
-        @if (shouldShowLoadingLogo()) {
-          <div class="loading-brand">
-            <div class="loading-brand__logo-wrap">
-              <img class="loading-brand__logo" [src]="loadingLogoUrl" alt="Consultingwerk" />
-              <div class="loading-brand__shimmer"></div>
-            </div>
-          </div>
-        }
 
-        @if (shellStage() !== 'loading') {
-          <div class="status-copy">
-            <h1 class="status-copy__title">{{ shellTitle() }}</h1>
-            <p class="status-copy__message">{{ shellMessage() }}</p>
+  <div class="app-shell__content-wrapper">
+    <div class="app-shell__working-area">
+      @if (shouldRenderForm()) {
+        <section class="form-stage">
+          <smart-mcp-form #form [smart-form-layout]="formName"></smart-mcp-form>
+        </section>
+      } @else {
+        <section class="status-stage">
+          <div
+            class="status-shell"
+            [class.status-shell--loading]="shellStage() === 'loading'"
+            [class.status-shell--error]="shellStage() === 'error'"
+            [attr.aria-live]="shellStage() === 'loading' ? 'polite' : 'assertive'"
+          >
+            @if (shouldShowLoadingLogo()) {
+              <div class="loading-brand">
+                <div class="loading-brand__logo-wrap">
+                  <img class="loading-brand__logo" [src]="loadingLogoUrl" alt="Consultingwerk" />
+                  <div class="loading-brand__shimmer"></div>
+                </div>
+              </div>
+            }
+
+            @if (shellStage() === 'error') {
+              <div class="status-copy">
+                <h1 class="status-copy__title">{{ shellTitle() }}</h1>
+                <p class="status-copy__message">{{ shellMessage() }}</p>
+              </div>
+            }
           </div>
-        }
-      </div>
-    </section>
-  }
+        </section>
+      }
+    </div>
+  </div>
+
   <div kendoWindowContainer></div>
   <smart-dialog-outlet></smart-dialog-outlet>
 </div>

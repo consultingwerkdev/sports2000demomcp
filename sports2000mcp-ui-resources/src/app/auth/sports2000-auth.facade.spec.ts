@@ -12,7 +12,7 @@ import { McpUiAuthPayload } from './mcp-ui-auth.types';
 
 const createState = (overrides: Partial<McpAppViewState> = {}): McpAppViewState => ({
   status: 'awaitingToolInput',
-  custNum: null,
+  toolArguments: null,
   toolResultText: null,
   lastHostContext: null,
   hostTheme: 'light',
@@ -49,9 +49,9 @@ class MockMcpAppBridgeService implements McpAppBridgePort {
 
   clearError(): void {}
 
-  submitCustomerInput(): void {}
+  submitToolArguments(): void {}
 
-  clearCustomerInput(): void {}
+  clearToolArguments(): void {}
 
   refreshUiAuthToken(): Promise<McpUiAuthPayload> {
     return Promise.reject(new Error('Not used in this test.'));
@@ -111,7 +111,7 @@ describe('Sports2000AuthFacade', () => {
     await facade.ensureAuthenticatedForState(
       createState({
         status: 'authenticating',
-        custNum: 42
+        toolArguments: { custNum: 42 }
       })
     );
 
@@ -126,7 +126,7 @@ describe('Sports2000AuthFacade', () => {
     await facade.ensureAuthenticatedForState(
       createState({
         status: 'authenticating',
-        custNum: 42
+        toolArguments: { custNum: 42 }
       })
     );
 
@@ -147,7 +147,7 @@ describe('Sports2000AuthFacade', () => {
     await facade.ensureAuthenticatedForState(
       createState({
         status: 'authenticating',
-        custNum: 42
+        toolArguments: { custNum: 42 }
       })
     );
 

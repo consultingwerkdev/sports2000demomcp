@@ -77,7 +77,7 @@ describe('McpAppBridgeService', () => {
     );
 
     expect(service.state().status).toBe('authenticating');
-    expect(service.state().custNum).toBe(42);
+    expect(service.state().toolArguments).toEqual({ custNum: 42 });
   });
 
   it('captures tool result text', () => {

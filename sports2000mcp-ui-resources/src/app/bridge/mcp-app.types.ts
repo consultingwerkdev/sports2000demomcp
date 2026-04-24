@@ -2,16 +2,16 @@ export type McpAppStatus =
   | 'booting'
   | 'awaitingToolInput'
   | 'authenticating'
-  | 'loadingCustomer'
+  | 'loadingForm'
   | 'ready'
-  | 'notFound'
   | 'error';
 
 export type McpUiTheme = 'light' | 'dark';
+export type McpToolArguments = Record<string, unknown>;
 
 export interface McpAppViewState {
   status: McpAppStatus;
-  custNum: number | null;
+  toolArguments: McpToolArguments | null;
   toolResultText: string | null;
   lastHostContext: unknown | null;
   hostTheme: McpUiTheme | null;
