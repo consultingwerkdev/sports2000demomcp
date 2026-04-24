@@ -1,5 +1,6 @@
 using ModelContextProtocol.Protocol;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 public sealed class Sports2000CustomerAppResources
 {
@@ -21,7 +22,7 @@ public sealed class Sports2000CustomerAppResources
         {
             Uri = ShowCustomerResourceUri,
             MimeType = ShowCustomerResourceMimeType,
-            Text = File.ReadAllText(angularIndexPath)
+            Text = AppendBuildVersionToUiAssetUrls(File.ReadAllText(angularIndexPath), angularIndexPath)
         };
     }
 
@@ -81,5 +82,43 @@ public sealed class Sports2000CustomerAppResources
 
         return new FileNotFoundException(
             $"The Sports2000 MCP Angular build output was not found. Expected '{AngularIndexRelativePath}'. Checked:{Environment.NewLine}{expectedPaths}");
+    }
+
+    private static string AppendBuildVersionToUiAssetUrls(string html, string angularIndexPath)
+    {
+        var buildVersion = ResolveBuildVersion(angularIndexPath);
+
+        return Regex.Replace(
+            html,
+            "(?<attribute>\\b(?:href|src)=\")(?<url>[^\"]*/ui-resources/sports2000-customer/[^\"]+\\.(?:css|js))(?<suffix>\")",
+            match =>
+            {
+                var url = match.Groups["url"].Value;
+                if (url.Contains('?'))
+                {
+                    return match.Value;
+                }
+
+                return $"{match.Groups["attribute"].Value}{url}?v={buildVersion}{match.Groups["suffix"].Value}";
+            },
+            RegexOptions.IgnoreCase);
+    }
+
+    private static long ResolveBuildVersion(string angularIndexPath)
+    {
+        var buildDirectory = Path.GetDirectoryName(angularIndexPath);
+        if (string.IsNullOrWhiteSpace(buildDirectory) || !Directory.Exists(buildDirectory))
+        {
+            return DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        }
+
+        return Directory
+            .EnumerateFiles(buildDirectory, "*.*", SearchOption.TopDirectoryOnly)
+            .Where(path =>
+                string.Equals(Path.GetExtension(path), ".js", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(Path.GetExtension(path), ".css", StringComparison.OrdinalIgnoreCase))
+            .Select(path => File.GetLastWriteTimeUtc(path).Ticks)
+            .DefaultIfEmpty(File.GetLastWriteTimeUtc(angularIndexPath).Ticks)
+            .Max();
     }
 }

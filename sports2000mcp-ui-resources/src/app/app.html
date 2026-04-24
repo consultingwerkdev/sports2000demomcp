@@ -1,4 +1,9 @@
-<div class="app-shell">
+<div
+  class="app-shell"
+  [class.app-shell--dev]="isDevEmulator"
+  [class.app-shell--embedded]="!isDevEmulator"
+  [class.app-shell--form-visible]="shouldRenderForm()"
+>
   @if (isDevEmulator) {
     <header class="dev-toolbar">
       <kendo-toolbar class="dev-toolbar__bar">
@@ -26,23 +31,9 @@
       </kendo-toolbar>
     </header>
   }
-
   @if (shouldRenderForm()) {
     <section class="form-stage">
       <smart-mcp-form class="w-100 h-100" #form [smart-form-layout]="formName"></smart-mcp-form>
-
-      @if (shellStage() === 'loading') {
-        <div class="status-overlay">
-          <div class="status-shell status-shell--overlay status-shell--loading" aria-live="polite">
-            <div class="loading-brand">
-              <div class="loading-brand__logo-wrap">
-                <img class="loading-brand__logo" [src]="loadingLogoUrl" alt="Consultingwerk" />
-                <div class="loading-brand__shimmer"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      }
     </section>
   } @else {
     <section class="status-stage">
@@ -52,12 +43,14 @@
         [class.status-shell--error]="shellStage() === 'error'"
         [attr.aria-live]="shellStage() === 'loading' ? 'polite' : 'assertive'"
       >
-        <div class="loading-brand">
-          <div class="loading-brand__logo-wrap">
-            <img class="loading-brand__logo" [src]="loadingLogoUrl" alt="Consultingwerk" />
-            <div class="loading-brand__shimmer"></div>
+        @if (shouldShowLoadingLogo()) {
+          <div class="loading-brand">
+            <div class="loading-brand__logo-wrap">
+              <img class="loading-brand__logo" [src]="loadingLogoUrl" alt="Consultingwerk" />
+              <div class="loading-brand__shimmer"></div>
+            </div>
           </div>
-        </div>
+        }
 
         @if (shellStage() !== 'loading') {
           <div class="status-copy">
@@ -68,7 +61,6 @@
       </div>
     </section>
   }
-
   <div kendoWindowContainer></div>
   <smart-dialog-outlet></smart-dialog-outlet>
 </div>

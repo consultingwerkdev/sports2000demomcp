@@ -27,7 +27,7 @@ builder.Services
     .AddMcpServer(McpUiServerSupport.EnableUiCapability)
     .WithStdioServerTransport()
     .WithTools<Sports2000CustomerTools>()
-    .WithTools(Sports2000CustomerAppRegistrations.CreateTools())
+    .WithTools(Sports2000CustomerAppRegistrations.CreateTools(builder.Services.BuildServiceProvider()))
     .WithResources(Sports2000CustomerAppRegistrations.CreateResources());
 
 await builder.Build().RunAsync();

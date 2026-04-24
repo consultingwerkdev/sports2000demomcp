@@ -3,15 +3,18 @@ import {
   SmartAuthenticationService,
   SmartFilterDescriptor,
   SmartFormComponent,
-  SmartServiceAdapter
+  SmartServiceAdapter,
+  SmartSessionManagerService
 } from '@consultingwerk/smartcomponent-library';
 import { firstValueFrom } from 'rxjs';
 import { applyDocumentTheme, applyHostStyleVariables, resolveDocumentTheme } from './host-theme-utils';
 import { KendoThemeLoaderService } from './kendo-theme-loader.service';
 import { MCP_APP_BRIDGE, McpAppBridgePort } from './mcp-app-bridge.port';
 import { McpAppStatus } from './mcp-app.types';
+import { McpUiAuthSessionService } from './mcp-ui-auth-session.service';
 
 const SPORTS2000_SERVICE_URI = 'https://sfrbo.consultingwerkcloud.com:8821';
+const SPORTS2000_KEYCLOAK_SERVICE_URI = `${SPORTS2000_SERVICE_URI}/smartkeycloak`;
 const SPORTS2000_FORM_NAME = 'Sports2000Mcp_CustomerForm';
 const CUSTOMER_DATASOURCE_NAME = 'CustomerDataSource';
 declare const __SPORTS2000_ASSET_BASE_URL__: string;
@@ -27,8 +30,10 @@ const ASSET_BASE_URL =
 export class App {
   protected readonly authService = inject(SmartAuthenticationService);
   protected readonly serviceAdapter = inject(SmartServiceAdapter);
+  protected readonly sessionContext = inject(SmartSessionManagerService).sessionContextSignal;
   protected readonly kendoThemeLoader = inject(KendoThemeLoaderService);
   protected readonly bridge = inject<McpAppBridgePort>(MCP_APP_BRIDGE);
+  protected readonly uiAuthSession = inject(McpUiAuthSessionService);
   protected readonly form = viewChild<SmartFormComponent>('form');
   protected readonly formName = SPORTS2000_FORM_NAME;
 
@@ -36,7 +41,6 @@ export class App {
   protected readonly isDevEmulator = this.bridge.isDevEmulator;
   protected readonly devCustNumInput = signal('');
   protected readonly loadingLogoUrl = `${ASSET_BASE_URL}cwlogo.png`;
-  protected readonly hasCustomer = computed(() => this.state().status === 'ready');
   protected readonly shouldRenderForm = computed(() => {
     const state = this.state();
     return (
@@ -45,6 +49,7 @@ export class App {
       (state.status === 'loadingCustomer' || state.status === 'ready')
     );
   });
+  protected readonly shouldShowLoadingLogo = computed(() => !this.shouldRenderForm());
   protected readonly shellStage = computed(() => this.getShellStage(this.state().status));
   protected readonly shellTitle = computed(() => this.getShellTitle());
   protected readonly shellMessage = computed(() => this.getShellMessage());
@@ -77,8 +82,22 @@ export class App {
     });
 
     effect(() => {
+      if (this.bridge.isDevEmulator) {
+        this.uiAuthSession.clear();
+        return;
+      }
+
+      this.uiAuthSession.setPayload(this.bridge.uiAuth());
+    });
+
+    effect(() => {
       const state = this.state();
+      const uiAuth = this.bridge.uiAuth();
       if (state.status !== 'authenticating' || state.custNum === null) {
+        return;
+      }
+
+      if (!this.bridge.isDevEmulator && !uiAuth) {
         return;
       }
 
@@ -127,7 +146,15 @@ export class App {
   }
 
   private async ensureAuthenticated(): Promise<void> {
-    if (this.serviceAdapter.stateSignal().authenticated) {
+    if (!this.bridge.isDevEmulator && !this.uiAuthSession.hasPayload()) {
+      return;
+    }
+
+    if (
+      this.serviceAdapter.stateSignal().authenticated &&
+      this.state().custNum !== null &&
+      this.state().status === 'authenticating'
+    ) {
       this.bridge.setStatus('loadingCustomer');
       return;
     }
@@ -146,18 +173,30 @@ export class App {
   private async authenticate(): Promise<void> {
     try {
       if (!this.authInitialized()) {
-        await this.authService.initialize(
-          {
-            strategy: 'hybridrealm'
-          },
-          {
-            serviceURI: SPORTS2000_SERVICE_URI,
-            credentials: {
-              username: 'admin',
-              password: 'password'
+        if (this.bridge.isDevEmulator) {
+          await this.authService.initialize(
+            {
+              strategy: 'hybridrealm'
+            },
+            {
+              serviceURI: SPORTS2000_SERVICE_URI,
+              credentials: {
+                username: 'admin',
+                password: 'password'
+              }
             }
-          }
-        );
+          );
+        } else {
+          await this.authService.initialize(
+            {
+              strategy: 'mcpbearer'
+            },
+            {
+              serviceURI: SPORTS2000_KEYCLOAK_SERVICE_URI
+            }
+          );
+        }
+
         this.authInitialized.set(true);
       }
 

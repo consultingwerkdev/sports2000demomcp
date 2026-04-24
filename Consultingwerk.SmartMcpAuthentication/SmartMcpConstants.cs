@@ -24,6 +24,7 @@ namespace Consultingwerk.SmartMcpAuthentication
             public const string AuthorizationServer = "/.well-known/oauth-authorization-server";
             public const string OpenIdConfiguration = "/.well-known/openid-configuration";
             public const string OAuth2Metadata = "/oauth2/metadata";
+            public const string ClientRegistration = "/oauth/register";
         }
     }
 }

@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { McpAppBridgePort } from './mcp-app-bridge.port';
 import { McpAppStatus, McpAppViewState } from './mcp-app.types';
+import { McpUiAuthPayload } from './mcp-ui-auth.types';
 
 const INITIAL_DEV_STATE: McpAppViewState = {
   status: 'awaitingToolInput',
@@ -15,8 +16,10 @@ const INITIAL_DEV_STATE: McpAppViewState = {
 @Injectable({ providedIn: 'root' })
 export class DevMcpAppBridgeService implements McpAppBridgePort {
   private readonly stateSignal = signal<McpAppViewState>(INITIAL_DEV_STATE);
+  private readonly uiAuthSignal = signal<McpUiAuthPayload | null>(null);
 
   readonly state = this.stateSignal.asReadonly();
+  readonly uiAuth = this.uiAuthSignal.asReadonly();
   readonly isDevEmulator = true;
 
   setStatus(status: McpAppStatus): void {
@@ -66,6 +69,12 @@ export class DevMcpAppBridgeService implements McpAppBridgePort {
       toolResultText: null,
       errorMessage: null
     });
+  }
+
+  refreshUiAuthToken(): Promise<McpUiAuthPayload> {
+    return Promise.reject(
+      new Error('The ng serve emulator does not support MCP-managed bearer token refresh.')
+    );
   }
 
   private patchState(patch: Partial<McpAppViewState>): void {

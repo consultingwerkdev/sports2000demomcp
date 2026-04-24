@@ -83,23 +83,17 @@ namespace Consultingwerk.SmartMcpAuthentication
         public string? RegistrationEndpoint { get; set; }
 
         /// <summary>
-        /// Gets the registration endpoint, falling back to constructing it from the Issuer if not explicitly set.
+        /// Gets the registration endpoint when explicitly configured.
         /// </summary>
-        /// <returns>The registration endpoint URL.</returns>
-        public string GetRegistrationEndpoint()
+        /// <returns>The registration endpoint URL, or <c>null</c> when not configured.</returns>
+        public string? GetRegistrationEndpoint()
         {
             if (!string.IsNullOrEmpty(RegistrationEndpoint))
             {
                 return RegistrationEndpoint;
             }
-            
-            // Default to Keycloak's standard path if not configured
-            if (!string.IsNullOrEmpty(Issuer))
-            {
-                return $"{Issuer}/clients-registrations/openid-connect";
-            }
-            
-            return string.Empty;
+
+            return null;
         }
     }
 }

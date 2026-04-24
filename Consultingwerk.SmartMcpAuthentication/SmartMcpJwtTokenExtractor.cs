@@ -151,7 +151,8 @@ namespace Consultingwerk.SmartMcpAuthentication
             
             // Standard OAuth2/OIDC discovery endpoints (RFC 8414, RFC 8707)
             return path.StartsWith("/.well-known/") || 
-                   path == SmartMcpConstants.Endpoints.OAuth2Metadata;
+                   path == SmartMcpConstants.Endpoints.OAuth2Metadata ||
+                   path == SmartMcpConstants.Endpoints.ClientRegistration;
         }
 
         /// <summary>

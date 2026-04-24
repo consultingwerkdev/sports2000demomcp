@@ -22389,7 +22389,7 @@ body {
 }
 app-root {
   display: block;
-  min-height: 100vh;
+  min-height: 100%;
 }
 .mcp-shell-fallback {
   min-height: 100vh;

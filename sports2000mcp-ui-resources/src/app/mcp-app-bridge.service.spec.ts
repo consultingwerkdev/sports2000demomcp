@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { McpAppBridgeService } from './mcp-app-bridge.service';
+import { McpUiAuthPayload } from './mcp-ui-auth.types';
 
 describe('McpAppBridgeService', () => {
   let service: McpAppBridgeService;
@@ -104,6 +105,103 @@ describe('McpAppBridgeService', () => {
     );
   });
 
+  it('captures ui auth payload from tool result metadata', () => {
+    completeInitializeHandshake();
+
+    const uiAuthPayload: McpUiAuthPayload = {
+      accessToken: 'header.payload.signature',
+      tokenType: 'Bearer',
+      expiresAtUtc: '2026-04-22T12:00:00.000Z'
+    };
+
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: {
+          jsonrpc: '2.0',
+          method: 'ui/notifications/tool-result',
+          params: {
+            _meta: {
+              'consultingwerk/uiAuth': uiAuthPayload
+            }
+          }
+        }
+      })
+    );
+
+    expect(service.uiAuth()).toEqual(uiAuthPayload);
+  });
+
+  it('captures ui auth payload from nested tool result metadata', () => {
+    completeInitializeHandshake();
+
+    const uiAuthPayload: McpUiAuthPayload = {
+      accessToken: 'nested.header.payload',
+      tokenType: 'Bearer',
+      expiresAtUtc: '2026-04-22T12:30:00.000Z'
+    };
+
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: {
+          jsonrpc: '2.0',
+          method: 'ui/notifications/tool-result',
+          params: {
+            result: {
+              meta: {
+                'consultingwerk/uiAuth': uiAuthPayload
+              }
+            }
+          }
+        }
+      })
+    );
+
+    expect(service.uiAuth()).toEqual(uiAuthPayload);
+  });
+
+  it('keeps the current ui auth payload when a later tool result omits auth metadata', () => {
+    completeInitializeHandshake();
+
+    const uiAuthPayload: McpUiAuthPayload = {
+      accessToken: 'existing.header.payload',
+      tokenType: 'Bearer',
+      expiresAtUtc: '2026-04-22T12:45:00.000Z'
+    };
+
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: {
+          jsonrpc: '2.0',
+          method: 'ui/notifications/tool-result',
+          params: {
+            _meta: {
+              'consultingwerk/uiAuth': uiAuthPayload
+            }
+          }
+        }
+      })
+    );
+
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: {
+          jsonrpc: '2.0',
+          method: 'ui/notifications/tool-result',
+          params: {
+            content: [
+              {
+                type: 'text',
+                text: 'No auth payload in this follow-up notification.'
+              }
+            ]
+          }
+        }
+      })
+    );
+
+    expect(service.uiAuth()).toEqual(uiAuthPayload);
+  });
+
   it('captures host theme and style variables from host context notifications', () => {
     completeInitializeHandshake();
 
@@ -181,6 +279,43 @@ describe('McpAppBridgeService', () => {
 
     expect(responses.some((message) => message.id === 77)).toBeTrue();
     expect(responses.some((message) => message.id === 78)).toBeTrue();
+  });
+
+  it('calls the hidden refresh tool and stores the returned auth payload', async () => {
+    completeInitializeHandshake();
+
+    const refreshRequestPromise = service.refreshUiAuthToken();
+    const refreshRequest = postMessageSpy.calls
+      .allArgs()
+      .map(([message]) => message as { id?: number; method?: string; params?: { name?: string } })
+      .find((message) => message.method === 'tools/call' && message.params?.name === 'refresh-ui-auth-token');
+
+    if (!refreshRequest?.id) {
+      throw new Error('Expected the bridge to call the hidden refresh tool.');
+    }
+
+    const refreshedPayload: McpUiAuthPayload = {
+      accessToken: 'refreshed.header.payload',
+      tokenType: 'Bearer',
+      expiresAtUtc: '2026-04-22T13:00:00.000Z'
+    };
+
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: {
+          jsonrpc: '2.0',
+          id: refreshRequest.id,
+          result: {
+            _meta: {
+              'consultingwerk/uiAuth': refreshedPayload
+            }
+          }
+        }
+      })
+    );
+
+    await expectAsync(refreshRequestPromise).toBeResolvedTo(refreshedPayload);
+    expect(service.uiAuth()).toEqual(refreshedPayload);
   });
 
   it('moves to error when tool input is missing custNum', () => {

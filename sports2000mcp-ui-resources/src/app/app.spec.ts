@@ -2,10 +2,15 @@ import { Component, Input, NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
-import { SmartAuthenticationService, SmartServiceAdapter } from '@consultingwerk/smartcomponent-library';
+import {
+  SmartAuthenticationService,
+  SmartServiceAdapter,
+  SmartSessionManagerService
+} from '@consultingwerk/smartcomponent-library';
 import { App } from './app';
 import { MCP_APP_BRIDGE, McpAppBridgePort } from './mcp-app-bridge.port';
 import { McpAppViewState } from './mcp-app.types';
+import { McpUiAuthPayload } from './mcp-ui-auth.types';
 
 const createState = (overrides: Partial<McpAppViewState> = {}): McpAppViewState => ({
   status: 'awaitingToolInput',
@@ -18,10 +23,18 @@ const createState = (overrides: Partial<McpAppViewState> = {}): McpAppViewState 
   ...overrides
 });
 
+const createUiAuthPayload = (): McpUiAuthPayload => ({
+  accessToken: 'header.payload.signature',
+  tokenType: 'Bearer',
+  expiresAtUtc: '2099-01-01T00:00:00.000Z'
+});
+
 class MockMcpAppBridgeService implements McpAppBridgePort {
   private readonly stateSource = signal<McpAppViewState>(createState());
+  private readonly uiAuthSource = signal<McpUiAuthPayload | null>(null);
 
   readonly state = this.stateSource.asReadonly();
+  readonly uiAuth = this.uiAuthSource.asReadonly();
   readonly isDevEmulator: boolean;
 
   constructor(isDevEmulator = false) {
@@ -63,10 +76,24 @@ class MockMcpAppBridgeService implements McpAppBridgePort {
 
   clearCustomerInput(): void {
     this.stateSource.set(createState());
+    this.uiAuthSource.set(null);
+  }
+
+  refreshUiAuthToken(): Promise<McpUiAuthPayload> {
+    const payload = this.uiAuthSource();
+    if (!payload) {
+      return Promise.reject(new Error('No UI auth payload is available.'));
+    }
+
+    return Promise.resolve(payload);
   }
 
   pushState(state: McpAppViewState): void {
     this.stateSource.set(state);
+  }
+
+  pushUiAuth(payload: McpUiAuthPayload | null): void {
+    this.uiAuthSource.set(payload);
   }
 }
 
@@ -78,6 +105,10 @@ class MockSmartServiceAdapter {
   readonly adapterState = signal({ authenticated: false });
   readonly stateSignal = this.adapterState.asReadonly();
   readonly login = jasmine.createSpy('login').and.resolveTo(undefined);
+}
+
+class MockSmartSessionManagerService {
+  readonly sessionContextSignal = signal(null);
 }
 
 @Component({
@@ -114,7 +145,8 @@ describe('App', () => {
       providers: [
         { provide: MCP_APP_BRIDGE, useValue: bridge },
         { provide: SmartAuthenticationService, useClass: MockSmartAuthenticationService },
-        { provide: SmartServiceAdapter, useValue: serviceAdapter }
+        { provide: SmartServiceAdapter, useValue: serviceAdapter },
+        { provide: SmartSessionManagerService, useClass: MockSmartSessionManagerService }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -177,7 +209,7 @@ describe('App', () => {
     serviceAdapter.adapterState.set({ authenticated: true });
     bridge.pushState(
       createState({
-        status: 'ready',
+        status: 'loadingCustomer',
         custNum: 42
       })
     );
@@ -187,6 +219,8 @@ describe('App', () => {
     fixture.detectChanges();
 
     expect(fixture.debugElement.query(By.css('smart-mcp-form'))).not.toBeNull();
+    expect(fixture.debugElement.query(By.css('.app-shell--form-visible'))).not.toBeNull();
+    expect(fixture.debugElement.query(By.css('.loading-brand__logo'))).toBeNull();
   });
 
   it('shows the dev toolbar and loads a customer only after a manual submit', async () => {
@@ -216,6 +250,76 @@ describe('App', () => {
 
     expect(fixture.debugElement.query(By.css('smart-mcp-form'))).not.toBeNull();
     expect(bridge.state().custNum).toBe(42);
+  });
+
+  it('waits for MCP host ui auth before authenticating in real host mode', async () => {
+    bridge.pushState(
+      createState({
+        status: 'authenticating',
+        custNum: 42
+      })
+    );
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const authService = TestBed.inject(SmartAuthenticationService) as unknown as MockSmartAuthenticationService;
+    expect(authService.initialize).not.toHaveBeenCalled();
+    expect(serviceAdapter.login).not.toHaveBeenCalled();
+  });
+
+  it('uses MCP bearer auth while opening a customer in real host mode', async () => {
+    bridge.pushUiAuth(createUiAuthPayload());
+    bridge.pushState(
+      createState({
+        status: 'authenticating',
+        custNum: 42
+      })
+    );
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const authService = TestBed.inject(SmartAuthenticationService) as unknown as MockSmartAuthenticationService;
+    expect(authService.initialize).toHaveBeenCalledWith(
+      {
+        strategy: 'mcpbearer'
+      },
+      {
+        serviceURI: 'https://sfrbo.consultingwerkcloud.com:8821/smartkeycloak'
+      }
+    );
+    expect(serviceAdapter.login).toHaveBeenCalled();
+  });
+
+  it('uses hybrid realm auth while opening a customer in dev emulator mode', async () => {
+    TestBed.resetTestingModule();
+    await configureTestingModule(true);
+
+    bridge.pushState(
+      createState({
+        status: 'authenticating',
+        custNum: 42
+      })
+    );
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const authService = TestBed.inject(SmartAuthenticationService) as unknown as MockSmartAuthenticationService;
+    expect(authService.initialize).toHaveBeenCalledWith(
+      {
+        strategy: 'hybridrealm'
+      },
+      {
+        serviceURI: 'https://sfrbo.consultingwerkcloud.com:8821',
+        credentials: {
+          username: 'admin',
+          password: 'password'
+        }
+      }
+    );
+    expect(serviceAdapter.login).toHaveBeenCalled();
   });
 
   it('clears the active customer in dev mode', async () => {

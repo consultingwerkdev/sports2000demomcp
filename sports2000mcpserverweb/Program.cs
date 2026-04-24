@@ -26,7 +26,7 @@ builder.Services.AddSmartMcpOAuth2Authentication(builder.Configuration);
 
 builder.Services.AddMcpServer(McpUiServerSupport.EnableUiCapability)
     .WithTools<Sports2000CustomerTools>()
-    .WithTools(Sports2000CustomerAppRegistrations.CreateTools())
+    .WithTools(Sports2000CustomerAppRegistrations.CreateTools(builder.Services.BuildServiceProvider()))
     .WithResources(Sports2000CustomerAppRegistrations.CreateResources())
     .WithHttpTransport(options =>
     {
@@ -121,6 +121,9 @@ app.UseStaticFiles(new StaticFileOptions
         context.Context.Response.Headers["Access-Control-Allow-Methods"] = "GET, HEAD, OPTIONS";
         context.Context.Response.Headers["Access-Control-Allow-Headers"] = "*";
         context.Context.Response.Headers["Cross-Origin-Resource-Policy"] = "cross-origin";
+        context.Context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
+        context.Context.Response.Headers["Pragma"] = "no-cache";
+        context.Context.Response.Headers["Expires"] = "0";
     }
 });
 app.UseRouting();

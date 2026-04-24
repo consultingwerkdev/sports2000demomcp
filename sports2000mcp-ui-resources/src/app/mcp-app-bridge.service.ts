@@ -1,6 +1,7 @@
 import { DestroyRef, Injectable, effect, inject, signal } from '@angular/core';
 import { McpAppBridgePort } from './mcp-app-bridge.port';
 import { McpAppStatus, McpAppViewState, McpUiTheme } from './mcp-app.types';
+import { McpUiAuthPayload } from './mcp-ui-auth.types';
 
 type JsonRpcId = number;
 
@@ -33,10 +34,13 @@ const INITIAL_STATE: McpAppViewState = {
   errorMessage: null
 };
 
+const REFRESH_UI_AUTH_TOOL_NAME = 'refresh-ui-auth-token';
+
 @Injectable({ providedIn: 'root' })
 export class McpAppBridgeService implements McpAppBridgePort {
   private readonly destroyRef = inject(DestroyRef);
   private readonly stateSignal = signal<McpAppViewState>(INITIAL_STATE);
+  private readonly uiAuthSignal = signal<McpUiAuthPayload | null>(null);
   private readonly pendingRequests = new Map<JsonRpcId, PendingRequest>();
   private readonly messageHandler = (event: MessageEvent<unknown>) => {
     this.handleMessage(event);
@@ -47,6 +51,7 @@ export class McpAppBridgeService implements McpAppBridgePort {
   private resizeObserver: ResizeObserver | null = null;
 
   readonly state = this.stateSignal.asReadonly();
+  readonly uiAuth = this.uiAuthSignal.asReadonly();
   readonly isDevEmulator = false;
 
   constructor() {
@@ -96,12 +101,28 @@ export class McpAppBridgeService implements McpAppBridgePort {
   }
 
   clearCustomerInput(): void {
+    this.uiAuthSignal.set(null);
     this.patchState({
       status: 'awaitingToolInput',
       custNum: null,
       toolResultText: null,
       errorMessage: null
     });
+  }
+
+  async refreshUiAuthToken(): Promise<McpUiAuthPayload> {
+    const result = await this.sendRequest('tools/call', {
+      name: REFRESH_UI_AUTH_TOOL_NAME,
+      arguments: {}
+    });
+
+    const payload = this.extractUiAuthPayload(result);
+    if (!payload) {
+      throw new Error('The host did not return a usable UI bearer token payload.');
+    }
+
+    this.uiAuthSignal.set(payload);
+    return payload;
   }
 
   private async initializeHost(): Promise<void> {
@@ -184,11 +205,18 @@ export class McpAppBridgeService implements McpAppBridgePort {
         this.handleToolInput(params);
         return;
       case 'ui/notifications/tool-result':
+        {
+          const uiAuthPayload = this.extractUiAuthPayload(params);
+          if (uiAuthPayload) {
+            this.uiAuthSignal.set(uiAuthPayload);
+          }
+        }
         this.patchState({
           toolResultText: this.extractToolResultText(params)
         });
         return;
       case 'ui/notifications/tool-cancelled':
+        this.uiAuthSignal.set(null);
         this.patchState({
           status: 'awaitingToolInput',
           custNum: null,
@@ -210,6 +238,7 @@ export class McpAppBridgeService implements McpAppBridgePort {
 
   private handleToolInput(params: unknown): void {
     const custNum = this.extractCustNum(params);
+    this.uiAuthSignal.set(null);
     if (custNum === null) {
       this.setError('The show-customer tool requires a numeric custNum input.');
       this.patchState({
@@ -356,6 +385,58 @@ export class McpAppBridgeService implements McpAppBridgePort {
     }
 
     return null;
+  }
+
+  private extractUiAuthPayload(params: unknown): McpUiAuthPayload | null {
+    const paramsRecord = this.asRecord(params);
+    const candidateContainers = [
+      paramsRecord,
+      this.asRecord(paramsRecord?.['result']),
+      this.asRecord(paramsRecord?.['data'])
+    ];
+
+    let payload: Record<string, any> | null = null;
+
+    for (const container of candidateContainers) {
+      if (!container) {
+        continue;
+      }
+
+      const meta =
+        this.asRecord(container['_meta']) ??
+        this.asRecord(container['meta']);
+
+      payload = this.asRecord(meta?.['consultingwerk/uiAuth']);
+      if (payload) {
+        break;
+      }
+    }
+
+    if (!payload) {
+      return null;
+    }
+
+    const accessToken = payload['accessToken'];
+    const tokenType = payload['tokenType'];
+    const expiresAtUtc = payload['expiresAtUtc'];
+
+    if (
+      typeof accessToken !== 'string' ||
+      typeof tokenType !== 'string' ||
+      typeof expiresAtUtc !== 'string'
+    ) {
+      return null;
+    }
+
+    if (tokenType !== 'Bearer') {
+      return null;
+    }
+
+    return {
+      accessToken,
+      tokenType,
+      expiresAtUtc
+    };
   }
 
   private extractCancellationReason(params: unknown): string {
