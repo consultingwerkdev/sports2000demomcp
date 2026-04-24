@@ -174,8 +174,11 @@ folder. Claude startup and tool discovery do not open the browser.
 ```
 
 Protected Sports2000 tool/resource calls automatically start the login flow
-when no local MCP session is active. `smart_auth_logout` clears only the local
-MCP session cache; it does not sign the browser out of Keycloak globally.
+when no local MCP session is active if `SmartMcpOAuth2:AutoLoginOnProtectedCall`
+is `true` (the default). When that setting is `false`, protected tools fail
+with a login-required MCP error telling the agent to call `smart_auth_login`
+instead. `smart_auth_logout` clears only the local MCP session cache; it does
+not sign the browser out of Keycloak globally.
 
 ### Available Tools
 

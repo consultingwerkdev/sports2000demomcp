@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -26,6 +27,37 @@ public interface IStdioMcpAuthSession
     Task<SmartMcpAuthStatus> LogoutAsync(CancellationToken cancellationToken = default);
 
     Task<string> GetValidAccessTokenAsync(CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Raised when a protected local MCP tool requires interactive login but auto-login is disabled.
+/// </summary>
+public sealed class SmartMcpLoginRequiredException(string message) : InvalidOperationException(message)
+{
+    public static SmartMcpLoginRequiredException CreateDefault() =>
+        new("The user is not authenticated for this protected MCP tool. Ask the user to sign in by calling smart_auth_login.");
+}
+
+/// <summary>
+/// Shared MCP tool result helpers for local auth-driven failures.
+/// </summary>
+public static class SmartMcpToolResults
+{
+    public static CallToolResult CreateTextResult(string text, bool isError = false) =>
+        new()
+        {
+            IsError = isError,
+            Content =
+            [
+                new TextContentBlock
+                {
+                    Text = text
+                }
+            ]
+        };
+
+    public static CallToolResult CreateLoginRequiredResult(SmartMcpLoginRequiredException exception) =>
+        CreateTextResult(exception.Message, isError: true);
 }
 
 /// <summary>
@@ -217,7 +249,7 @@ internal sealed class StdioMcpAuthSession(
 
             if (!options.AutoLoginOnProtectedCall)
             {
-                return string.Empty;
+                throw SmartMcpLoginRequiredException.CreateDefault();
             }
 
             var loggedIn = await RunBrowserLoginAsync(cancellationToken).ConfigureAwait(false);
