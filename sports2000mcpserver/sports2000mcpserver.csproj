@@ -30,6 +30,7 @@
   <ItemGroup>
     <None Include=".mcp\server.json" Pack="true" PackagePath="/.mcp/" />
     <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Consultingwerk.SmartMcpAuthentication\Consultingwerk.SmartMcpAuthentication.csproj" />
     <ProjectReference Include="..\Consultingwerk.Sports2000DemoTools\Consultingwerk.Sports2000DemoTools.csproj" />
   </ItemGroup>
 

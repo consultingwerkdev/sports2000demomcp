@@ -59,7 +59,7 @@ namespace Consultingwerk.SmartMcpAuthentication
         /// <summary>
         /// Requested OAuth2 scopes.
         /// </summary>
-        public string[] Scopes { get; set; } = ["openid", "profile"];
+        public string[] Scopes { get; set; } = [];
 
         /// <summary>
         /// JWKS endpoint URL for token validation.
@@ -83,6 +83,36 @@ namespace Consultingwerk.SmartMcpAuthentication
         public string? RegistrationEndpoint { get; set; }
 
         /// <summary>
+        /// Directory used by local stdio MCP authentication to cache OAuth tokens.
+        /// </summary>
+        public string CacheDirectory { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Host used by the local stdio OAuth callback listener.
+        /// </summary>
+        public string RedirectHost { get; set; } = "127.0.0.1";
+
+        /// <summary>
+        /// Port used by the local stdio OAuth callback listener. A value of 0 selects a free port.
+        /// </summary>
+        public int RedirectPort { get; set; }
+
+        /// <summary>
+        /// Whether protected local stdio tool calls should start login automatically when no valid token is cached.
+        /// </summary>
+        public bool AutoLoginOnProtectedCall { get; set; } = true;
+
+        /// <summary>
+        /// Seconds before token expiry where the local stdio session should refresh proactively.
+        /// </summary>
+        public int TokenRefreshSkewSeconds { get; set; } = 60;
+
+        /// <summary>
+        /// Maximum seconds to wait for browser-based local stdio login.
+        /// </summary>
+        public int LocalLoginTimeoutSeconds { get; set; } = 120;
+
+        /// <summary>
         /// Gets the registration endpoint when explicitly configured.
         /// </summary>
         /// <returns>The registration endpoint URL, or <c>null</c> when not configured.</returns>
@@ -94,6 +124,22 @@ namespace Consultingwerk.SmartMcpAuthentication
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Returns configured scopes without duplicates, or sensible OpenID defaults when no scopes are configured.
+        /// </summary>
+        /// <param name="scopes">The configured scopes.</param>
+        /// <returns>The normalized scopes.</returns>
+        public static string[] NormalizeScopes(IEnumerable<string>? scopes)
+        {
+            var normalized = scopes?
+                .Where(scope => !string.IsNullOrWhiteSpace(scope))
+                .Select(scope => scope.Trim())
+                .Distinct(StringComparer.Ordinal)
+                .ToArray();
+
+            return normalized is { Length: > 0 } ? normalized : ["openid", "profile"];
         }
     }
 }

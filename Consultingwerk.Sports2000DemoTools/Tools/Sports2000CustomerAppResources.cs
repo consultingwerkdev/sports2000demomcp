@@ -26,6 +26,14 @@ public sealed class Sports2000CustomerAppResources
         };
     }
 
+    public static string? ResolveAngularAssetDirectory()
+    {
+        var angularIndexPath = ResolveAngularIndexPath();
+        return string.IsNullOrWhiteSpace(angularIndexPath)
+            ? null
+            : Path.GetDirectoryName(angularIndexPath);
+    }
+
     public static JsonObject CreateUiMeta()
     {
         var resourceDomains = new JsonArray();
@@ -70,8 +78,10 @@ public sealed class Sports2000CustomerAppResources
         yield return Path.GetFullPath(Path.Combine(currentDirectory, AngularIndexRelativePath));
 
         var appBaseDirectory = AppContext.BaseDirectory;
+        yield return Path.GetFullPath(Path.Combine(appBaseDirectory, AngularIndexRelativePath));
         yield return Path.GetFullPath(Path.Combine(appBaseDirectory, "..", "..", "..", AngularIndexRelativePath));
         yield return Path.GetFullPath(Path.Combine(appBaseDirectory, "..", "..", "..", "..", "sports2000mcpserverweb", AngularIndexRelativePath));
+        yield return Path.GetFullPath(Path.Combine(appBaseDirectory, "..", "..", "..", "..", "..", "sports2000mcpserverweb", AngularIndexRelativePath));
     }
 
     private static FileNotFoundException CreateMissingBuildException()

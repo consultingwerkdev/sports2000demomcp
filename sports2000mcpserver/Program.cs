@@ -1,3 +1,5 @@
+using Consultingwerk.SmartMcpAuthentication;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -5,6 +7,16 @@ using sports2000mcpserver;
 using System.IO;
 
 var builder = Host.CreateApplicationBuilder(args);
+builder.Configuration.AddJsonFile(
+    Path.Combine(AppContext.BaseDirectory, "appsettings.json"),
+    optional: true,
+    reloadOnChange: false);
+builder.Configuration.AddJsonFile(
+    Path.Combine(GetProjectDirectory(), "appsettings.json"),
+    optional: true,
+    reloadOnChange: false);
+builder.Configuration.AddEnvironmentVariables();
+builder.Configuration.AddCommandLine(args);
 
 var pasoeUrl = builder.Configuration["pasoeUrl"] ?? "http://localhost:8810/apsv";
 
@@ -22,15 +34,36 @@ builder.Logging.ClearProviders();
 builder.Logging.SetMinimumLevel(LogLevel.Trace);
 builder.Logging.AddProvider(new FileLoggerProvider(logFilePath));
 
+builder.Services.AddSmartMcpLocalAuthentication(builder.Configuration);
+builder.Services.AddHostedService<Sports2000CustomerAppAssetServer>();
+
 // Add the MCP services: the transport to use (stdio) and the tools to register.
 builder.Services
     .AddMcpServer(McpUiServerSupport.EnableUiCapability)
     .WithStdioServerTransport()
+    .WithTools<SmartMcpAuthTools>()
     .WithTools<Sports2000CustomerTools>()
     .WithTools(Sports2000CustomerAppRegistrations.CreateTools(builder.Services.BuildServiceProvider()))
     .WithResources(Sports2000CustomerAppRegistrations.CreateResources());
 
 await builder.Build().RunAsync();
+
+static string GetProjectDirectory()
+{
+    var directory = new DirectoryInfo(AppContext.BaseDirectory);
+
+    while (directory is not null)
+    {
+        if (File.Exists(Path.Combine(directory.FullName, "sports2000mcpserver.csproj")))
+        {
+            return directory.FullName;
+        }
+
+        directory = directory.Parent;
+    }
+
+    return AppContext.BaseDirectory;
+}
 
 internal sealed class FileLoggerProvider(string logFilePath) : ILoggerProvider
 {

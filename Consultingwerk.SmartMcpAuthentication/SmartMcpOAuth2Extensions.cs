@@ -25,6 +25,7 @@ namespace Consultingwerk.SmartMcpAuthentication
         {
             var options = new SmartMcpOAuth2Options();
             configuration.GetSection(SmartMcpOAuth2Options.SectionName).Bind(options);
+            options.Scopes = SmartMcpOAuth2Options.NormalizeScopes(options.Scopes);
 
             // Log configuration at initialization
             var logger = services.BuildServiceProvider().GetService<ILoggerFactory>()?.CreateLogger(SmartMcpConstants.LoggerCategory);
