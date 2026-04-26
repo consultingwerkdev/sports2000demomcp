@@ -31,21 +31,29 @@ namespace Consultingwerk.SmartMcpAuthentication
             
             logger?.LogInformation("=== SmartMCP OAuth2 Authentication Configuration ===");
             logger?.LogInformation("OAuth2 Authentication Enabled: {Enabled}", options.Enabled);
+            logger?.LogInformation("Token Acquisition Mode: {TokenAcquisition}", options.TokenAcquisition);
             
             if (options.Enabled)
             {
-                logger?.LogInformation("Authorization Endpoint: {Endpoint}", options.AuthorizationEndpoint);
-                logger?.LogInformation("Token Endpoint: {Endpoint}", options.TokenEndpoint);
-                logger?.LogInformation("Client ID: {ClientId}", options.ClientId);
-                logger?.LogInformation("Client Secret: {ClientSecret}", string.IsNullOrEmpty(options.ClientSecret) ? "(not set - public client)" : "***");
-                logger?.LogInformation("Scopes: {Scopes}", string.Join(", ", options.Scopes));
-                logger?.LogInformation("JWKS URI: {JwksUri}", options.JwksUri);
-                logger?.LogInformation("Issuer: {Issuer}", options.Issuer);
-                logger?.LogInformation("Audience: {Audience}", options.Audience);
+                if (options.TokenAcquisition == TokenAcquisitionMode.Oidc)
+                {
+                    logger?.LogInformation("Authorization Endpoint: {Endpoint}", options.AuthorizationEndpoint);
+                    logger?.LogInformation("Token Endpoint: {Endpoint}", options.TokenEndpoint);
+                    logger?.LogInformation("Client ID: {ClientId}", options.ClientId);
+                    logger?.LogInformation("Client Secret: {ClientSecret}", string.IsNullOrEmpty(options.ClientSecret) ? "(not set - public client)" : "***");
+                    logger?.LogInformation("Scopes: {Scopes}", string.Join(", ", options.Scopes));
+                    logger?.LogInformation("JWKS URI: {JwksUri}", options.JwksUri);
+                    logger?.LogInformation("Issuer: {Issuer}", options.Issuer);
+                    logger?.LogInformation("Audience: {Audience}", options.Audience);
+                }
+                else if (options.TokenAcquisition == TokenAcquisitionMode.JwtPassThrough)
+                {
+                    logger?.LogInformation("JWT Pass-Through mode: Tokens will be accepted from tool parameters");
+                }
             }
             else
             {
-                logger?.LogInformation("OAuth2 authentication is DISABLED");
+                logger?.LogInformation("OAuth2 authentication is DISABLED - tokens will be stripped from tool calls");
             }
             logger?.LogInformation("====================================================");
 
@@ -61,7 +69,8 @@ namespace Consultingwerk.SmartMcpAuthentication
             // Register HttpClient factory
             services.AddHttpClient();
 
-            if (!options.Enabled)
+            // Only configure JWT Bearer authentication when Enabled=true AND TokenAcquisition=Oidc
+            if (!options.Enabled || options.TokenAcquisition != TokenAcquisitionMode.Oidc)
             {
                 return services;
             }
@@ -77,10 +86,11 @@ namespace Consultingwerk.SmartMcpAuthentication
                     jwtOptions.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = !string.IsNullOrEmpty(options.Issuer),
-                        ValidateAudience = false, // Disable strict audience validation as requested
+                        ValidateAudience = !string.IsNullOrEmpty(options.Audience),
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = options.Issuer,
+                        ValidAudience = options.Audience,
                     };
 
                     // Configure JWKS endpoint
@@ -188,7 +198,8 @@ namespace Consultingwerk.SmartMcpAuthentication
         {
             var options = app.ApplicationServices.GetRequiredService<SmartMcpOAuth2Options>();
             
-            if (!options.Enabled)
+            // Only use auth middleware when Enabled=true AND TokenAcquisition=Oidc
+            if (!options.Enabled || options.TokenAcquisition != TokenAcquisitionMode.Oidc)
             {
                 return app;
             }

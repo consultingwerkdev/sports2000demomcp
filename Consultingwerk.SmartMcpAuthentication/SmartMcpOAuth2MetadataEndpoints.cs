@@ -62,13 +62,17 @@ namespace Consultingwerk.SmartMcpAuthentication
         /// </summary>
         private static async Task ServeProtectedResourceMetadata(HttpContext context, SmartMcpOAuth2Options options)
         {
+            // RFC 8707: Resource Indicators for OAuth 2.0
+            // This tells clients what resource/audience to request when obtaining tokens
             var metadata = new
             {
                 resource = options.Audience,
                 authorization_servers = new[] { options.Issuer },
                 bearer_methods_supported = new[] { "header" },
                 resource_documentation = "https://modelcontextprotocol.io",
-                resource_signing_alg_values_supported = new[] { "RS256", "RS384", "RS512" }
+                resource_signing_alg_values_supported = new[] { "RS256", "RS384", "RS512" },
+                scopes_supported = options.Scopes,
+                audience = options.Audience
             };
 
             context.Response.ContentType = "application/json";
@@ -90,15 +94,16 @@ namespace Consultingwerk.SmartMcpAuthentication
                 authorization_endpoint = options.AuthorizationEndpoint,
                 token_endpoint = options.TokenEndpoint,
                 jwks_uri = options.JwksUri,
+                registration_endpoint = options.GetRegistrationEndpoint(),
                 response_types_supported = new[] { "code" },
                 response_modes_supported = new[] { "query", "fragment" },
                 grant_types_supported = new[] { "authorization_code", "refresh_token" },
                 token_endpoint_auth_methods_supported = new[] { "client_secret_basic", "client_secret_post", "none" },
-                // RFC 7636: PKCE support
                 code_challenge_methods_supported = new[] { "plain", "S256" },
                 scopes_supported = options.Scopes,
+                resource_indicators_supported = true,
+                resource = options.Audience,
                 revocation_endpoint = options.TokenEndpoint,
-                // For full metadata, clients should query Keycloak directly
                 authorization_server_metadata = $"{options.Issuer}/.well-known/openid-configuration"
             };
 
@@ -121,6 +126,7 @@ namespace Consultingwerk.SmartMcpAuthentication
                 authorization_endpoint = options.AuthorizationEndpoint,
                 token_endpoint = options.TokenEndpoint,
                 jwks_uri = options.JwksUri,
+                registration_endpoint = options.GetRegistrationEndpoint(),
                 response_types_supported = new[] { "code" },
                 response_modes_supported = new[] { "query", "fragment" },
                 grant_types_supported = new[] { "authorization_code", "refresh_token" },

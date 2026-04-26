@@ -36,9 +36,11 @@ namespace Consultingwerk.SmartMcpAuthentication
         /// <param name="context">The HTTP context.</param>
         public async Task InvokeAsync(HttpContext context)
         {
-            if (!_options.Enabled)
+            // Only enforce token requirements when Enabled=true AND TokenAcquisition=Oidc
+            // This middleware should only be registered in that case, but check for safety
+            if (!_options.Enabled || _options.TokenAcquisition != TokenAcquisitionMode.Oidc)
             {
-                _logger?.LogDebug("OAuth2 authentication is disabled - allowing request to {Path} without authentication", context.Request.Path);
+                _logger?.LogDebug("OAuth2 authentication not in OIDC mode - allowing request to {Path} without authentication", context.Request.Path);
                 await _next(context);
                 return;
             }
