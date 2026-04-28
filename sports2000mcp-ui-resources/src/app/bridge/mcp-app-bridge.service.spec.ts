@@ -318,6 +318,46 @@ describe('McpAppBridgeService', () => {
     expect(service.uiAuth()).toEqual(refreshedPayload);
   });
 
+  it('sends model context updates to the host', async () => {
+    completeInitializeHandshake();
+
+    const update = {
+      content: [
+        {
+          type: 'text' as const,
+          text: 'The user updated customer 42 in the Sports2000 customer viewer.'
+        }
+      ],
+      structuredContent: {
+        event: 'sports2000.customer.updated',
+        custNum: 42
+      }
+    };
+    const updateRequestPromise = service.updateModelContext(update);
+    const updateRequest = postMessageSpy.calls
+      .allArgs()
+      .map(([message]) => message as { id?: number; method?: string; params?: unknown })
+      .find((message) => message.method === 'ui/update-model-context');
+
+    if (!updateRequest?.id) {
+      throw new Error('Expected the bridge to send a model context update request.');
+    }
+
+    expect(updateRequest.params).toEqual(update);
+
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: {
+          jsonrpc: '2.0',
+          id: updateRequest.id,
+          result: {}
+        }
+      })
+    );
+
+    await expectAsync(updateRequestPromise).toBeResolved();
+  });
+
   it('moves to error when tool input is missing custNum', () => {
     completeInitializeHandshake();
 

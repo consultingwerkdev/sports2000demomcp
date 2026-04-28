@@ -23,9 +23,10 @@ import { McpBearerAuthenticationStrategy } from './auth/mcp-bearer-auth.strategy
 import { DevMcpAppBridgeService } from './bridge/dev-mcp-app-bridge.service';
 import { MCP_APP_BRIDGE } from './bridge/mcp-app-bridge.port';
 import { McpAppBridgeService } from './bridge/mcp-app-bridge.service';
-import { Sports2000McpShowCustomerFormLogic } from './form-logic-classes/show-customer/show-customer-logic';
+import { Sports2000McpShowCustomerFormLogic } from './form-logic-classes/show-customer/sholw-customer-form-logic/show-customer-logic';
 import { SmartMcpCacheBustingInterceptor } from './core/http/smart-mcp-cache-busting.interceptor';
 import { SmartMcpFormLayoutService } from './core/http/smart-mcp-form-layout.service';
+import { Sports2000McpShowCustomerViewerLogic } from './form-logic-classes/show-customer-viewer-logic/show-customer-viewer-logic';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,7 @@ import { SmartMcpFormLayoutService } from './core/http/smart-mcp-form-layout.ser
       {
         serviceURI: environment.app.smartComponentLibraryServiceUri
       },
-      withLogicClasses([Sports2000McpShowCustomerFormLogic])
+      withLogicClasses([Sports2000McpShowCustomerFormLogic, Sports2000McpShowCustomerViewerLogic])
     ),
     {
       provide: MCP_APP_BRIDGE,

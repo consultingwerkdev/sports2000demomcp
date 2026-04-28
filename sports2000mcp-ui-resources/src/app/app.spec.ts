@@ -88,6 +88,10 @@ class MockMcpAppBridgeService implements McpAppBridgePort {
     return Promise.resolve(payload);
   }
 
+  updateModelContext(): Promise<void> {
+    return Promise.resolve();
+  }
+
   pushState(state: McpAppViewState): void {
     this.stateSource.set(state);
   }

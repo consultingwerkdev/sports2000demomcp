@@ -1,6 +1,11 @@
 import { Injectable, signal } from '@angular/core';
 import { McpAppBridgePort } from './mcp-app-bridge.port';
-import { McpAppStatus, McpAppViewState, McpToolArguments } from './mcp-app.types';
+import {
+  McpAppStatus,
+  McpAppViewState,
+  McpModelContextUpdate,
+  McpToolArguments
+} from './mcp-app.types';
 import { McpUiAuthPayload } from '../auth/mcp-ui-auth.types';
 
 const INITIAL_DEV_STATE: McpAppViewState = {
@@ -76,6 +81,11 @@ export class DevMcpAppBridgeService implements McpAppBridgePort {
     return Promise.reject(
       new Error('The ng serve emulator does not support MCP-managed bearer token refresh.')
     );
+  }
+
+  updateModelContext(update: McpModelContextUpdate): Promise<void> {
+    console.debug('[sports2000-mcp-ui] Dev model context update', update);
+    return Promise.resolve();
   }
 
   private patchState(patch: Partial<McpAppViewState>): void {

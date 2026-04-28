@@ -1,6 +1,12 @@
 import { DestroyRef, Injectable, effect, inject, signal } from '@angular/core';
 import { McpAppBridgePort } from './mcp-app-bridge.port';
-import { McpAppStatus, McpAppViewState, McpToolArguments, McpUiTheme } from './mcp-app.types';
+import {
+  McpAppStatus,
+  McpAppViewState,
+  McpModelContextUpdate,
+  McpToolArguments,
+  McpUiTheme
+} from './mcp-app.types';
 import { McpUiAuthPayload } from '../auth/mcp-ui-auth.types';
 
 type JsonRpcId = number;
@@ -123,6 +129,10 @@ export class McpAppBridgeService implements McpAppBridgePort {
 
     this.uiAuthSignal.set(payload);
     return payload;
+  }
+
+  async updateModelContext(update: McpModelContextUpdate): Promise<void> {
+    await this.sendRequest('ui/update-model-context', update);
   }
 
   private async initializeHost(): Promise<void> {

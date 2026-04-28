@@ -57,6 +57,10 @@ class MockMcpAppBridgeService implements McpAppBridgePort {
     return Promise.reject(new Error('Not used in this test.'));
   }
 
+  updateModelContext(): Promise<void> {
+    return Promise.resolve();
+  }
+
   pushUiAuth(payload: McpUiAuthPayload | null): void {
     this.uiAuthSource.set(payload);
   }
