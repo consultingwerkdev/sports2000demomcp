@@ -1,17 +1,22 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
 import { McpUiTheme } from '../../bridge/mcp-app.types';
+import { KENDO_THEME_LINK_ID, KENDO_THEME_PATHS } from './kendo-theme-loader.constants';
 
-const KENDO_THEME_LINK_ID = 'kendo-host-theme';
-const KENDO_THEME_PATHS: Record<McpUiTheme, string> = {
-  light: `${environment.app.assetBaseUrl}kendo-themes/bootstrap-main.css`,
-  dark: `${environment.app.assetBaseUrl}kendo-themes/bootstrap-main-dark.css`
-};
-
+/**
+ * Loads the host-matching Kendo stylesheet into the document head.
+ *
+ * @memberof KendoThemeLoader
+ */
 @Injectable({ providedIn: 'root' })
 export class KendoThemeLoaderService {
   private activeTheme: McpUiTheme | null = null;
 
+  /**
+   * Applies the requested Kendo theme stylesheet when it is not already active.
+   *
+   * @param {McpUiTheme} theme - The theme to apply.
+   * @memberof KendoThemeLoaderService
+   */
   applyTheme(theme: McpUiTheme): void {
     if (this.activeTheme === theme) {
       return;
@@ -22,6 +27,12 @@ export class KendoThemeLoaderService {
     this.activeTheme = theme;
   }
 
+  /**
+   * Ensures the dedicated Kendo theme link element exists in the document head.
+   *
+   * @returns {HTMLLinkElement} - The stylesheet link element used for theme switching.
+   * @memberof KendoThemeLoaderService
+   */
   private ensureThemeLink(): HTMLLinkElement {
     const existingLink = document.getElementById(KENDO_THEME_LINK_ID);
     if (existingLink instanceof HTMLLinkElement) {

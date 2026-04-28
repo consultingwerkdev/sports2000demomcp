@@ -1,9 +1,19 @@
 import { McpJsonValue } from './mcp-app.types';
+import {
+  MAX_CONTEXT_ARRAY_ITEMS,
+  MAX_CONTEXT_DEPTH,
+  MAX_CONTEXT_OBJECT_KEYS
+} from './mcp-json-value.constants';
 
-const MAX_CONTEXT_DEPTH = 4;
-const MAX_CONTEXT_ARRAY_ITEMS = 25;
-const MAX_CONTEXT_OBJECT_KEYS = 25;
-
+/**
+ * Normalizes an arbitrary runtime value into a bounded, JSON-safe structure for MCP context payloads.
+ *
+ * @param {unknown} value - The value to normalize.
+ * @param {number} depth - The current recursion depth used to limit nested structures.
+ * @param {WeakSet<object>} seen - Tracks visited objects to avoid circular traversal.
+ * @returns {McpJsonValue} - The normalized JSON-safe representation.
+ * @memberof McpJsonValue
+ */
 export function toMcpJsonValue(
   value: unknown,
   depth = 0,

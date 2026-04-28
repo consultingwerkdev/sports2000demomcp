@@ -8,44 +8,21 @@ import {
   McpUiTheme
 } from './mcp-app.types';
 import { McpUiAuthPayload } from '../auth/mcp-ui-auth.types';
+import { JsonRpcId, JsonRpcMessage, PendingRequest } from './json-rpc.types';
+import {
+  INITIAL_MCP_APP_VIEW_STATE,
+  REFRESH_UI_AUTH_TOOL_NAME
+} from './mcp-app-bridge.constants';
 
-type JsonRpcId = number;
-
-interface JsonRpcError {
-  code: number;
-  message: string;
-}
-
-interface JsonRpcMessage {
-  jsonrpc: '2.0';
-  id?: JsonRpcId;
-  method?: string;
-  params?: unknown;
-  result?: unknown;
-  error?: JsonRpcError;
-}
-
-interface PendingRequest {
-  resolve: (result: unknown) => void;
-  reject: (error: Error) => void;
-}
-
-const INITIAL_STATE: McpAppViewState = {
-  status: 'booting',
-  toolArguments: null,
-  toolResultText: null,
-  lastHostContext: null,
-  hostTheme: null,
-  hostStyleVariables: {},
-  errorMessage: null
-};
-
-const REFRESH_UI_AUTH_TOOL_NAME = 'refresh-ui-auth-token';
-
+/**
+ * Implements the production MCP Apps bridge over postMessage JSON-RPC.
+ *
+ * @memberof McpAppBridge
+ */
 @Injectable({ providedIn: 'root' })
 export class McpAppBridgeService implements McpAppBridgePort {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly stateSignal = signal<McpAppViewState>(INITIAL_STATE);
+  private readonly stateSignal = signal<McpAppViewState>(INITIAL_MCP_APP_VIEW_STATE);
   private readonly uiAuthSignal = signal<McpUiAuthPayload | null>(null);
   private readonly pendingRequests = new Map<JsonRpcId, PendingRequest>();
   private readonly messageHandler = (event: MessageEvent<unknown>) => {
@@ -60,6 +37,11 @@ export class McpAppBridgeService implements McpAppBridgePort {
   readonly uiAuth = this.uiAuthSignal.asReadonly();
   readonly isDevEmulator = false;
 
+  /**
+   * Creates the bridge, wires host listeners, and starts the MCP Apps handshake.
+   *
+   * @memberof McpAppBridgeService
+   */
   constructor() {
     window.addEventListener('message', this.messageHandler);
     this.destroyRef.onDestroy(() => this.dispose());
@@ -76,6 +58,12 @@ export class McpAppBridgeService implements McpAppBridgePort {
     void this.initializeHost();
   }
 
+  /**
+   * Updates the shell status while preserving any current error text when appropriate.
+   *
+   * @param {McpAppStatus} status - The next shell status.
+   * @memberof McpAppBridgeService
+   */
   setStatus(status: McpAppStatus): void {
     this.patchState({
       status,
@@ -83,6 +71,12 @@ export class McpAppBridgeService implements McpAppBridgePort {
     });
   }
 
+  /**
+   * Publishes an error state to the Angular shell.
+   *
+   * @param {string} message - The message shown to the user.
+   * @memberof McpAppBridgeService
+   */
   setError(message: string): void {
     this.patchState({
       status: 'error',
@@ -90,6 +84,11 @@ export class McpAppBridgeService implements McpAppBridgePort {
     });
   }
 
+  /**
+   * Clears the current bridge error and restores the next appropriate shell state.
+   *
+   * @memberof McpAppBridgeService
+   */
   clearError(): void {
     if (this.stateSignal().status !== 'error') {
       this.patchState({ errorMessage: null });
@@ -102,10 +101,21 @@ export class McpAppBridgeService implements McpAppBridgePort {
     });
   }
 
+  /**
+   * Starts a new tool-driven form flow from explicit tool arguments.
+   *
+   * @param {McpToolArguments} argumentsRecord - The tool arguments to store in bridge state.
+   * @memberof McpAppBridgeService
+   */
   submitToolArguments(argumentsRecord: McpToolArguments): void {
     this.startToolFlow(argumentsRecord, null);
   }
 
+  /**
+   * Clears the active tool flow and returns the shell to its waiting state.
+   *
+   * @memberof McpAppBridgeService
+   */
   clearToolArguments(): void {
     this.uiAuthSignal.set(null);
     this.patchState({
@@ -116,6 +126,12 @@ export class McpAppBridgeService implements McpAppBridgePort {
     });
   }
 
+  /**
+   * Calls the hidden host refresh tool and stores the returned UI auth payload.
+   *
+   * @returns {Promise<McpUiAuthPayload>} - The refreshed UI auth payload.
+   * @memberof McpAppBridgeService
+   */
   async refreshUiAuthToken(): Promise<McpUiAuthPayload> {
     const result = await this.sendRequest('tools/call', {
       name: REFRESH_UI_AUTH_TOOL_NAME,
@@ -131,10 +147,23 @@ export class McpAppBridgeService implements McpAppBridgePort {
     return payload;
   }
 
+  /**
+   * Sends widget-owned model context to the host for later model turns.
+   *
+   * @param {McpModelContextUpdate} update - The context payload to persist on the host.
+   * @returns {Promise<void>} - Resolves when the host acknowledges the update.
+   * @memberof McpAppBridgeService
+   */
   async updateModelContext(update: McpModelContextUpdate): Promise<void> {
     await this.sendRequest('ui/update-model-context', update);
   }
 
+  /**
+   * Performs the MCP Apps initialization handshake with the parent host.
+   *
+   * @returns {Promise<void>} - Resolves after the host handshake completes.
+   * @memberof McpAppBridgeService
+   */
   private async initializeHost(): Promise<void> {
     try {
       await this.sendRequest('ui/initialize', {
@@ -158,6 +187,12 @@ export class McpAppBridgeService implements McpAppBridgePort {
     }
   }
 
+  /**
+   * Dispatches incoming postMessage events to the appropriate JSON-RPC handler.
+   *
+   * @param {MessageEvent<unknown>} event - The browser message event emitted by the host.
+   * @memberof McpAppBridgeService
+   */
   private handleMessage(event: MessageEvent<unknown>): void {
     const message = this.asJsonRpcMessage(event.data);
     if (!message) {
@@ -187,6 +222,12 @@ export class McpAppBridgeService implements McpAppBridgePort {
     }
   }
 
+  /**
+   * Responds to host-originated JSON-RPC requests that target the widget.
+   *
+   * @param {JsonRpcMessage} message - The host request envelope.
+   * @memberof McpAppBridgeService
+   */
   private handleHostRequest(message: JsonRpcMessage): void {
     switch (message.method) {
       case 'ping':
@@ -206,6 +247,13 @@ export class McpAppBridgeService implements McpAppBridgePort {
     }
   }
 
+  /**
+   * Processes host notifications that update bridge state or lifecycle.
+   *
+   * @param {string} method - The notification method name.
+   * @param {unknown} params - The notification payload.
+   * @memberof McpAppBridgeService
+   */
   private handleHostNotification(method: string, params: unknown): void {
     switch (method) {
       case 'ui/notifications/tool-input-partial':
@@ -246,6 +294,12 @@ export class McpAppBridgeService implements McpAppBridgePort {
     }
   }
 
+  /**
+   * Validates the final tool input payload and starts the shell flow.
+   *
+   * @param {unknown} params - The tool-input notification payload.
+   * @memberof McpAppBridgeService
+   */
   private handleToolInput(params: unknown): void {
     const toolArguments = this.extractToolArguments(params);
     this.uiAuthSignal.set(null);
@@ -261,6 +315,12 @@ export class McpAppBridgeService implements McpAppBridgePort {
     this.startToolFlow(toolArguments, null);
   }
 
+  /**
+   * Merges host-context updates such as theme and style variables into bridge state.
+   *
+   * @param {unknown} params - The host-context notification payload.
+   * @memberof McpAppBridgeService
+   */
   private handleHostContextChanged(params: unknown): void {
     const context = this.asRecord(params);
     const patch: Partial<McpAppViewState> = {
@@ -278,6 +338,11 @@ export class McpAppBridgeService implements McpAppBridgePort {
     this.patchState(patch);
   }
 
+  /**
+   * Starts observing document size changes so the host can resize the iframe.
+   *
+   * @memberof McpAppBridgeService
+   */
   private startResizeObserver(): void {
     if (typeof ResizeObserver === 'undefined') {
       return;
@@ -288,11 +353,21 @@ export class McpAppBridgeService implements McpAppBridgePort {
     this.resizeObserver.observe(document.body);
   }
 
+  /**
+   * Stops observing iframe content size changes.
+   *
+   * @memberof McpAppBridgeService
+   */
   private disconnectResizeObserver(): void {
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
   }
 
+  /**
+   * Publishes the current document size to the host.
+   *
+   * @memberof McpAppBridgeService
+   */
   private publishSize(): void {
     if (!this.hostInitialized) {
       return;
@@ -310,6 +385,14 @@ export class McpAppBridgeService implements McpAppBridgePort {
     this.sendNotification('ui/notifications/size-changed', { width, height });
   }
 
+  /**
+   * Sends a JSON-RPC request to the host and tracks the pending response handlers.
+   *
+   * @param {string} method - The JSON-RPC method name.
+   * @param {unknown} params - The request payload.
+   * @returns {Promise<unknown>} - The host response payload.
+   * @memberof McpAppBridgeService
+   */
   private sendRequest(method: string, params: unknown): Promise<unknown> {
     const id = this.nextRequestId++;
 
@@ -324,6 +407,13 @@ export class McpAppBridgeService implements McpAppBridgePort {
     });
   }
 
+  /**
+   * Sends a JSON-RPC notification to the host.
+   *
+   * @param {string} method - The JSON-RPC method name.
+   * @param {unknown} params - The notification payload.
+   * @memberof McpAppBridgeService
+   */
   private sendNotification(method: string, params: unknown): void {
     this.postMessage({
       jsonrpc: '2.0',
@@ -332,6 +422,13 @@ export class McpAppBridgeService implements McpAppBridgePort {
     });
   }
 
+  /**
+   * Sends a JSON-RPC response back to the host.
+   *
+   * @param {JsonRpcId} id - The request id being answered.
+   * @param {unknown} result - The response payload.
+   * @memberof McpAppBridgeService
+   */
   private sendResponse(id: JsonRpcId, result: unknown): void {
     this.postMessage({
       jsonrpc: '2.0',
@@ -340,10 +437,22 @@ export class McpAppBridgeService implements McpAppBridgePort {
     });
   }
 
+  /**
+   * Posts a raw JSON-RPC message to the host window.
+   *
+   * @param {JsonRpcMessage} message - The JSON-RPC envelope to post.
+   * @memberof McpAppBridgeService
+   */
   private postMessage(message: JsonRpcMessage): void {
     window.parent.postMessage(message, '*');
   }
 
+  /**
+   * Applies a partial bridge-state update.
+   *
+   * @param {Partial<McpAppViewState>} patch - The state fragment to merge.
+   * @memberof McpAppBridgeService
+   */
   private patchState(patch: Partial<McpAppViewState>): void {
     this.stateSignal.update((state) => ({
       ...state,
@@ -351,6 +460,13 @@ export class McpAppBridgeService implements McpAppBridgePort {
     }));
   }
 
+  /**
+   * Enters the authenticating phase for the current tool flow.
+   *
+   * @param {McpToolArguments} toolArguments - The normalized tool arguments.
+   * @param {string | null} toolResultText - Optional text result already emitted by the host.
+   * @memberof McpAppBridgeService
+   */
   private startToolFlow(toolArguments: McpToolArguments, toolResultText: string | null): void {
     this.patchState({
       status: 'authenticating',
@@ -360,6 +476,13 @@ export class McpAppBridgeService implements McpAppBridgePort {
     });
   }
 
+  /**
+   * Extracts normalized tool arguments from a host payload.
+   *
+   * @param {unknown} params - The host payload containing tool arguments.
+   * @returns {McpToolArguments | null} - The normalized tool arguments, if valid.
+   * @memberof McpAppBridgeService
+   */
   private extractToolArguments(params: unknown): McpToolArguments | null {
     const argumentsRecord =
       this.asRecord(this.asRecord(params)?.['arguments']) ??
@@ -385,6 +508,13 @@ export class McpAppBridgeService implements McpAppBridgePort {
     return null;
   }
 
+  /**
+   * Extracts the first text content block from a tool result payload.
+   *
+   * @param {unknown} params - The tool result payload.
+   * @returns {string | null} - The first text result, if present.
+   * @memberof McpAppBridgeService
+   */
   private extractToolResultText(params: unknown): string | null {
     const content = this.asRecord(params)?.['content'];
     if (!Array.isArray(content)) {
@@ -401,6 +531,13 @@ export class McpAppBridgeService implements McpAppBridgePort {
     return null;
   }
 
+  /**
+   * Extracts the custom UI auth payload from a host result envelope.
+   *
+   * @param {unknown} params - The host result or notification payload.
+   * @returns {McpUiAuthPayload | null} - The parsed UI auth payload, if present.
+   * @memberof McpAppBridgeService
+   */
   private extractUiAuthPayload(params: unknown): McpUiAuthPayload | null {
     const paramsRecord = this.asRecord(params);
     const candidateContainers = [
@@ -453,6 +590,13 @@ export class McpAppBridgeService implements McpAppBridgePort {
     };
   }
 
+  /**
+   * Extracts a human-readable cancellation reason from the host payload.
+   *
+   * @param {unknown} params - The cancellation payload.
+   * @returns {string} - The resolved cancellation reason.
+   * @memberof McpAppBridgeService
+   */
   private extractCancellationReason(params: unknown): string {
     const reason = this.asRecord(params)?.['reason'];
     return typeof reason === 'string' && reason.length > 0
@@ -460,10 +604,24 @@ export class McpAppBridgeService implements McpAppBridgePort {
       : 'The tool execution was cancelled.';
   }
 
+  /**
+   * Validates a host theme value.
+   *
+   * @param {unknown} value - The candidate theme value.
+   * @returns {McpUiTheme | null} - The normalized host theme, if valid.
+   * @memberof McpAppBridgeService
+   */
   private extractTheme(value: unknown): McpUiTheme | null {
     return value === 'light' || value === 'dark' ? value : null;
   }
 
+  /**
+   * Extracts host-provided CSS variables from a host-context payload.
+   *
+   * @param {unknown} styles - The styles payload emitted by the host.
+   * @returns {Record<string, string>} - The validated CSS variable map.
+   * @memberof McpAppBridgeService
+   */
   private extractHostStyleVariables(styles: unknown): Record<string, string> {
     const variables = this.asRecord(this.asRecord(styles)?.['variables']);
     if (!variables) {
@@ -475,6 +633,13 @@ export class McpAppBridgeService implements McpAppBridgePort {
     );
   }
 
+  /**
+   * Validates that an arbitrary value conforms to the JSON-RPC message shape.
+   *
+   * @param {unknown} value - The value to inspect.
+   * @returns {JsonRpcMessage | null} - The parsed JSON-RPC message, if valid.
+   * @memberof McpAppBridgeService
+   */
   private asJsonRpcMessage(value: unknown): JsonRpcMessage | null {
     const record = this.asRecord(value);
     if (!record || record['jsonrpc'] !== '2.0') {
@@ -484,6 +649,13 @@ export class McpAppBridgeService implements McpAppBridgePort {
     return record as JsonRpcMessage;
   }
 
+  /**
+   * Coerces an arbitrary value into a plain record when possible.
+   *
+   * @param {unknown} value - The candidate value to convert.
+   * @returns {Record<string, any> | null} - The record view of the value, if valid.
+   * @memberof McpAppBridgeService
+   */
   private asRecord(value: unknown): Record<string, any> | null {
     if (!value || typeof value !== 'object' || Array.isArray(value)) {
       return null;
@@ -492,6 +664,14 @@ export class McpAppBridgeService implements McpAppBridgePort {
     return value as Record<string, any>;
   }
 
+  /**
+   * Resolves an error-like value to a user-facing message.
+   *
+   * @param {unknown} error - The thrown error candidate.
+   * @param {string} fallback - The fallback message to use when no Error message is available.
+   * @returns {string} - The user-facing error text.
+   * @memberof McpAppBridgeService
+   */
   private toErrorMessage(error: unknown, fallback: string): string {
     if (error instanceof Error && error.message) {
       return error.message;
@@ -500,6 +680,11 @@ export class McpAppBridgeService implements McpAppBridgePort {
     return fallback;
   }
 
+  /**
+   * Tears down browser listeners and rejects any pending host requests.
+   *
+   * @memberof McpAppBridgeService
+   */
   private dispose(): void {
     window.removeEventListener('message', this.messageHandler);
     this.disconnectResizeObserver();

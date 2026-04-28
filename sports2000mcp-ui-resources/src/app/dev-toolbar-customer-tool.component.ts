@@ -1,6 +1,11 @@
 import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
 import { ToolBarToolComponent } from '@progress/kendo-angular-toolbar';
 
+/**
+ * Hosts the numeric customer selector shown in the dev emulator toolbar.
+ *
+ * @memberof DevToolbar
+ */
 @Component({
   selector: 'app-dev-toolbar-customer-tool',
   standalone: false,
@@ -33,6 +38,17 @@ import { ToolBarToolComponent } from '@progress/kendo-angular-toolbar';
   `
 })
 export class DevToolbarCustomerToolComponent extends ToolBarToolComponent {
+  /**
+   * Represents the current customer number shown by the toolbar control.
+   *
+   * @memberof DevToolbarCustomerToolComponent
+   */
   @Input() value: number | null = null;
+
+  /**
+   * Emits the parsed customer number when the toolbar value changes.
+   *
+   * @memberof DevToolbarCustomerToolComponent
+   */
   @Output() valueChange = new EventEmitter<number | null>();
 }
