@@ -1,0 +1,111 @@
+/**********************************************************************
+ * Copyright © 2006-2026 by Consultingwerk Ltd. ("CW") -              *
+ * www.consultingwerk.com and other contributors as listed            *
+ * below. All Rights Reserved.                                        *
+ *                                                                    *
+ *  Software is distributed on an "AS IS", WITHOUT WARRANTY OF ANY    *
+ *   KIND, either express or implied.                                 *
+ *                                                                    *
+ *  Contributors:                                                     *
+ *                                                                    *
+ **********************************************************************/
+/*------------------------------------------------------------------------
+    File        : smart-form.component.css
+    Purpose     : Styles for Smart Form.
+    Author(s)   : Radu Nicoara
+    Created     : Jan 15, 2018
+  ----------------------------------------------------------------------*/
+
+::ng-deep FormItem {
+    background-color: inherit;
+    display: block;
+}
+
+::ng-deep .form-column.vertical-stretch {
+    display: flex !important;
+    height: 100% !important;
+}
+
+::ng-deep .k-ripple-container {
+    padding: var(--kendo-spacing-2.5, 0.625rem) 0px;
+}
+
+::ng-deep .container-fluid > .row.smart-form-row  {
+    display: block;
+    flex-direction: unset;
+}
+::ng-deep .container-fluid > .row.smart-form-row > formcolumn  {
+    padding-inline-start: 0px;
+    padding-inline-end: 0px;
+    display: block;
+    height: 100% !important;
+}
+
+/* Only apply overflow-y: auto when NOT in stretch mode */
+::ng-deep .container-fluid:not(.stretch-mode) > .row.smart-form-row > formcolumn  {
+    overflow-y: auto !important;
+}
+::ng-deep .k-window .k-window-titlebar .k-window-actions.floating-window-buttons .k-button:nth-of-type(1),
+::ng-deep .k-window .k-window-titlebar .k-window-actions.floating-window-buttons .k-button:nth-of-type(2) {
+    visibility: visible !important;
+}
+
+
+::ng-deep .unsaved-changes-warning-dialog {
+    z-index: 100000 !important;
+}
+
+::ng-deep .smart-form-dirty-state > div {
+    border: 1px solid var(--kendo-color-error, #dc3545);
+}
+
+::ng-deep * {
+    font-family: var(--kendo-font-family, "Segoe UI", "Helvetica Neue", Arial, sans-serif);
+}
+
+::ng-deep .form-window-icon {
+    margin-right: var(--kendo-spacing-2, 0.5rem);
+}
+
+::ng-deep img.form-window-icon {
+    width: var(--kendo-spacing-4, 1rem);
+    height: var(--kendo-spacing-4, 1rem);
+    object-fit: contain;
+    vertical-align: middle;
+}
+
+:host {
+    display: block;
+    width: 100%;
+}
+
+.smart-form-root {
+    position: relative;
+    width: 100%;
+}
+
+.smart-mcp-form__container,
+.smart-mcp-form__content {
+    width: 100%;
+}
+
+::ng-deep .smart-mcp-form__content > smart-layout-container {
+    display: block;
+    width: 100%;
+}
+
+.smart-form-fab-container {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.smart-form-fab-container smart-fab {
+    pointer-events: auto;
+}

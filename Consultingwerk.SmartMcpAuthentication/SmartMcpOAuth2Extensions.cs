@@ -25,6 +25,7 @@ namespace Consultingwerk.SmartMcpAuthentication
         {
             var options = new SmartMcpOAuth2Options();
             configuration.GetSection(SmartMcpOAuth2Options.SectionName).Bind(options);
+            options.Scopes = SmartMcpOAuth2Options.NormalizeScopes(options.Scopes);
 
             // Log configuration at initialization
             var logger = services.BuildServiceProvider().GetService<ILoggerFactory>()?.CreateLogger(SmartMcpConstants.LoggerCategory);
@@ -93,8 +94,12 @@ namespace Consultingwerk.SmartMcpAuthentication
                         ValidAudience = options.Audience,
                     };
 
-                    // Configure JWKS endpoint
-                    if (!string.IsNullOrEmpty(options.JwksUri))
+                    // Prefer the provider's OIDC discovery document for metadata retrieval.
+                    if (!string.IsNullOrEmpty(options.Issuer))
+                    {
+                        jwtOptions.MetadataAddress = $"{options.Issuer.TrimEnd('/')}/.well-known/openid-configuration";
+                    }
+                    else if (!string.IsNullOrEmpty(options.JwksUri))
                     {
                         jwtOptions.MetadataAddress = options.JwksUri.Replace("/protocol/openid-connect/certs", "/.well-known/openid-configuration");
                     }

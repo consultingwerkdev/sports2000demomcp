@@ -1,0 +1,112 @@
+/* You can add global styles to this file, and also import other style files */
+@use '@progress/kendo-font-icons/dist/index.css';
+// :root {
+//   color-scheme: light dark;
+//   --app-shell-bg: var(--color-background-primary, #f5f6f8);
+//   --app-surface-bg: var(--color-background-secondary, rgba(255, 255, 255, 0.96));
+//   --app-surface-elevated: var(--color-background-secondary, rgba(255, 255, 255, 0.99));
+//   --app-overlay: rgba(17, 24, 39, 0.1);
+//   --app-text: var(--color-text-primary, #20252c);
+//   --app-text-muted: var(--color-text-secondary, #5f6b7a);
+//   --app-text-subtle: var(--color-text-secondary, #6f7785);
+//   --app-border: var(--color-border-primary, var(--color-border-default, rgba(17, 24, 39, 0.14)));
+//   --app-accent: var(--color-accent-brand, var(--color-brand-primary, #2563eb));
+//   --app-accent-contrast: #ffffff;
+//   --app-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+// }
+
+// [data-theme='dark'] {
+//   --app-shell-bg: var(--color-background-primary, #1f2328);
+//   --app-surface-bg: var(--color-background-secondary, rgba(43, 48, 56, 0.94));
+//   --app-surface-elevated: var(--color-background-secondary, rgba(43, 48, 56, 0.98));
+//   --app-overlay: rgba(15, 23, 42, 0.36);
+//   --app-text: var(--color-text-primary, #f5f7fa);
+//   --app-text-muted: var(--color-text-secondary, #c8cfd8);
+//   --app-text-subtle: var(--color-text-secondary, #b3bbc5);
+//   --app-border: var(--color-border-primary, var(--color-border-default, rgba(255, 255, 255, 0.14)));
+//   --app-accent: var(--color-accent-brand, var(--color-brand-primary, #6ea8fe));
+//   --app-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+// }
+
+html,
+body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--app-shell-bg);
+  color: var(--app-text);
+  font-family: var(--font-sans, 'Segoe UI', system-ui, sans-serif);
+}
+
+app-root {
+  display: block;
+  width: 100%;
+}
+
+.mcp-shell-fallback {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.mcp-shell-fallback__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.mcp-shell-fallback__logo-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.mcp-shell-fallback__logo {
+  width: min(280px, 58vw);
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.mcp-shell-fallback__shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 35%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0.1) 65%,
+    transparent 100%
+  );
+  transform: translateX(-140%);
+  animation: mcp-shell-fallback-shimmer 1.8s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.mcp-shell-fallback__loading {
+  margin: 0;
+  color: var(--app-text-muted);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+@keyframes mcp-shell-fallback-shimmer {
+  100% {
+    transform: translateX(140%);
+  }
+}

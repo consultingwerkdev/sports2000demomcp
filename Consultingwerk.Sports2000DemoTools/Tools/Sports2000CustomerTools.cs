@@ -1,5 +1,6 @@
 using Consultingwerk.SmartMcpAuthentication;
 using Consultingwerk.Sports2000Proxy;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using Progress.Open4GL.Proxy;
 using sports2000mcpserver;
@@ -41,7 +42,7 @@ public class Sports2000CustomerTools
 
     [McpServerTool]
     [Description("Creates a new Order for a Customer. We require the Customer Number, the Item Number and Quantity to proceed.")]
-    public string CreateCustomerOrder(
+    public CallToolResult CreateCustomerOrder(
         [Description("Customer Number (mandatory)")] int piCustNum = 0,
         [Description("Item Number (mandatory)")] int piItemNum = 0,
         [Description("Quantity Number (mandatory)")] int piQuantity = 0,
@@ -63,17 +64,21 @@ public class Sports2000CustomerTools
 
             appserver.Dispose();
 
-            return response;
+            return CreateTextResult(response);
+        }
+        catch (SmartMcpLoginRequiredException ex)
+        {
+            return SmartMcpToolResults.CreateLoginRequiredResult(ex);
         }
         catch (Exception ex)
         {
-            return ex.Message;
+            return CreateTextResult(ex.Message, isError: true);
         }
     }
 
     [McpServerTool]
     [Description("Returns details (Name, Address, City, Country, CreditLimit, Ballance, Salesrep) about customers based on a Customer Number (CustNum) or the customer name. When multiple customers are found using the customer name, a list is returned instead of details")]
-    public string GetCustomerDetails(
+    public CallToolResult GetCustomerDetails(
         [Description("Customer Number (optional)")] int piCustNum = 0,
         [Description("Customer Name filter (optional)")] string pcName = "",
         [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
@@ -93,17 +98,21 @@ public class Sports2000CustomerTools
 
             appserver.Dispose();
 
-            return response;
+            return CreateTextResult(response);
+        }
+        catch (SmartMcpLoginRequiredException ex)
+        {
+            return SmartMcpToolResults.CreateLoginRequiredResult(ex);
         }
         catch (Exception ex)
         {
-            return ex.Message;
+            return CreateTextResult(ex.Message, isError: true);
         }
     }
 
     [McpServerTool]
     [Description("Returns details of all orders based on a customer number. This includes the order status, date, promise date, carrier, ship date and order line item details such as item and quantity.")]
-    public string GetCustomerOrders(
+    public CallToolResult GetCustomerOrders(
         [Description("Customer Number (mandatory)")] int piCustNum,
         [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
     {
@@ -121,18 +130,22 @@ public class Sports2000CustomerTools
 
             appserver.Dispose();
 
-            return response;
+            return CreateTextResult(response);
+        }
+        catch (SmartMcpLoginRequiredException ex)
+        {
+            return SmartMcpToolResults.CreateLoginRequiredResult(ex);
         }
         catch (Exception ex)
         {
-            return ex.Message;
+            return CreateTextResult(ex.Message, isError: true);
         }
     }
 
 
     [McpServerTool]
     [Description("Returns details (Item Number, Item Name, Price, On Hand, Catalog Page, Catalog Description, Category 1, Category2, Special, Weight) for the items matching the provided search string. Leave the search string empty to return all items (ca. 70). It's preferabls to search for short words, singular words. This tool provides catalog, product information including quantity on stock (at hand).")]
-    public string GetItemDetails(
+    public CallToolResult GetItemDetails(
         [Description("Item Name filter (optional)")] string pcItemNameFilter = "",
         [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
     {
@@ -150,17 +163,21 @@ public class Sports2000CustomerTools
 
             appserver.Dispose();
 
-            return response;
+            return CreateTextResult(response);
+        }
+        catch (SmartMcpLoginRequiredException ex)
+        {
+            return SmartMcpToolResults.CreateLoginRequiredResult(ex);
         }
         catch (Exception ex)
         {
-            return ex.Message;
+            return CreateTextResult(ex.Message, isError: true);
         }
     }
 
     [McpServerTool]
     [Description("Returns the current users (my) profile including details like the customer number, email address and company name.")]
-    public string GetUserProfile(
+    public CallToolResult GetUserProfile(
         [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
     {
         try
@@ -176,17 +193,21 @@ public class Sports2000CustomerTools
 
             appserver.Dispose();
 
-            return response;
+            return CreateTextResult(response);
+        }
+        catch (SmartMcpLoginRequiredException ex)
+        {
+            return SmartMcpToolResults.CreateLoginRequiredResult(ex);
         }
         catch (Exception ex)
         {
-            return ex.Message;
+            return CreateTextResult(ex.Message, isError: true);
         }
     }
 
     [McpServerTool]
     [Description("Opens a Customer Form in the Browser web application, either based on the Customer Number (CustNum) or the customer name. When multiple customers are found using the customer name, a list is returned instead of opening the form directly")]
-    public string OpenCustomerForm(
+    public CallToolResult OpenCustomerForm(
         [Description("Customer Number (optional)")] int piCustNum = 0,
         [Description("Customer Name filter (optional)")] string pcName = "",
         [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
@@ -206,17 +227,21 @@ public class Sports2000CustomerTools
 
             appserver.Dispose();
 
-            return response;
+            return CreateTextResult(response);
+        }
+        catch (SmartMcpLoginRequiredException ex)
+        {
+            return SmartMcpToolResults.CreateLoginRequiredResult(ex);
         }
         catch (Exception ex)
         {
-            return ex.Message;
+            return CreateTextResult(ex.Message, isError: true);
         }
     }
 
     [McpServerTool]
     [Description("Queries/searches customers based on an OpenEdge ABL Query string (FOR EACH) for the eCustomer table. Fields of the table are: CustNum (integer), Country (character), Name (character), Address (character), Address2 (character), City (character), State (character), PostalCode (character), Contact (character), Phone (character), SalesRep (character), CreditLimit (decimal), Balance (decimal), Terms (character), Discount (integer), Comments (character), Fax (character), EmailAddress (character)")]
-    public string QueryCustomers(
+    public CallToolResult QueryCustomers(
         [Description("The OpenEdge ABL Query string for the eCustomer table (mandatory)")] string pcQueryString = "",
         [Description("jwtToken for authentication (optional)")] string? pcJwtToken = "")
     {
@@ -234,17 +259,21 @@ public class Sports2000CustomerTools
 
             appserver.Dispose();
 
-            return response;
+            return CreateTextResult(response);
+        }
+        catch (SmartMcpLoginRequiredException ex)
+        {
+            return SmartMcpToolResults.CreateLoginRequiredResult(ex);
         }
         catch (Exception ex)
         {
-            return ex.Message;
+            return CreateTextResult(ex.Message, isError: true);
         }
     }
 
     [McpServerTool]
     [Description("Updates fields of a customer record (Name, Address, City, Country, CreditLimit, Ballance, Salesrep) only provide values for the fields that the user instructs you to change")]
-    public string UpdateCustomerDetails(
+    public CallToolResult UpdateCustomerDetails(
         [Description("Customer Number (optional)")] int piCustNum = 0,
         [Description("The updated value for the Customer Name filter (optional)")] string pcName = "",
         [Description("The updated value for the address (street) (optional)")] string pcAddress = "",
@@ -280,13 +309,30 @@ public class Sports2000CustomerTools
                 
             appserver.Dispose();
 
-            return response;
+            return CreateTextResult(response);
+        }
+        catch (SmartMcpLoginRequiredException ex)
+        {
+            return SmartMcpToolResults.CreateLoginRequiredResult(ex);
         }
         catch (Exception ex)
         {
-            return ex.Message;
+            return CreateTextResult(ex.Message, isError: true);
         }
     }
 
-
+    private static CallToolResult CreateTextResult(string text, bool isError = false)
+    {
+        return new CallToolResult
+        {
+            IsError = isError,
+            Content =
+            [
+                new TextContentBlock
+                {
+                    Text = text
+                }
+            ]
+        };
+    }
 }

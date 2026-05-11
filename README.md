@@ -151,6 +151,35 @@ Add to your Claude Desktop configuration (`claude_desktop_config.json`):
 }
 ```
 
+#### Using Claude Desktop with local auth controls
+
+For a better desktop-agent login/logout experience with the local stdio server,
+connect Claude directly to `sports2000mcpserver`. The stdio server exposes
+shared auth tools (`smart_auth_status`, `smart_auth_login`, and
+`smart_auth_logout`) and caches tokens in the Consultingwerk local app data
+folder. Claude startup and tool discovery do not open the browser.
+
+```json
+{
+  "mcpServers": {
+    "sports2000": {
+      "command": "C:\\Work_STREAM\\SmartComponentLibrary\\sports2000demomcp\\sports2000mcpserver\\bin\\Debug\\net10.0\\win-x64\\sports2000mcpserver.exe",
+      "args": [
+        "--pasoeUrl",
+        "https://sfrbo.consultingwerkcloud.com:8821/apsv"
+      ]
+    }
+  }
+}
+```
+
+Protected Sports2000 tool/resource calls automatically start the login flow
+when no local MCP session is active if `SmartMcpOAuth2:AutoLoginOnProtectedCall`
+is `true` (the default). When that setting is `false`, protected tools fail
+with a login-required MCP error telling the agent to call `smart_auth_login`
+instead. `smart_auth_logout` clears only the local MCP session cache; it does
+not sign the browser out of Keycloak globally.
+
 ### Available Tools
 
 The server provides the following tools (via `Sports2000CustomerTools`):

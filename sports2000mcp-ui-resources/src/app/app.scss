@@ -1,0 +1,207 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.app-shell {
+  display: block;
+  background: var(--app-shell-bg);
+  color: var(--app-text);
+}
+
+.app-shell--dev {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dev-toolbar {
+  flex: 0 0 auto;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 1rem 1.25rem 0;
+}
+
+.dev-toolbar__bar {
+  width: min(72rem, calc(100% - 2rem));
+  margin: 0 auto;
+  border: 1px solid var(--app-border);
+  border-radius: 1rem;
+  background: var(--app-surface-elevated);
+  box-shadow: var(--app-shadow);
+}
+
+.app-shell__content-wrapper {
+  width: 100%;
+}
+
+.app-shell__working-area {
+  width: 100%;
+}
+
+.dev-toolbar__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 13rem;
+  padding: 0.2rem 0;
+}
+
+.dev-toolbar__label {
+  color: var(--app-text-subtle);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dev-toolbar__input {
+  width: 100%;
+}
+
+.status-stage,
+.form-stage {
+  width: 100%;
+}
+
+.status-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.form-stage {
+  position: relative;
+  display: block;
+  overflow: auto;
+}
+
+.form-stage smart-mcp-form {
+  display: block;
+  width: 100%;
+}
+
+.status-shell {
+  display: flex;
+  width: min(34rem, 100%);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.loading-brand {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+}
+
+.app-shell--form-visible .loading-brand {
+  display: none;
+}
+
+.loading-brand__logo-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: min(22rem, 82vw);
+  padding: 0.5rem 0.75rem;
+  overflow: hidden;
+  border-radius: 1.5rem;
+}
+
+.loading-brand__logo {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 1;
+  filter:
+    drop-shadow(0 0 0.4rem color-mix(in srgb, var(--app-text) 10%, transparent))
+    drop-shadow(0 0 1.6rem color-mix(in srgb, var(--app-accent) 12%, transparent));
+}
+
+.loading-brand__shimmer {
+  position: absolute;
+  inset: 0;
+  transform: translateX(-135%) skewX(-16deg);
+  background: linear-gradient(
+    102deg,
+    transparent 0%,
+    color-mix(in srgb, var(--app-text) 0%, transparent) 26%,
+    color-mix(in srgb, var(--app-accent) 22%, transparent) 40%,
+    color-mix(in srgb, var(--app-text) 82%, transparent) 49%,
+    color-mix(in srgb, white 96%, transparent) 50%,
+    color-mix(in srgb, var(--app-text) 78%, transparent) 51%,
+    color-mix(in srgb, var(--app-accent) 18%, transparent) 62%,
+    color-mix(in srgb, var(--app-text) 0%, transparent) 78%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.98;
+  animation: cwlogo-shimmer 1.35s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes cwlogo-shimmer {
+  0% {
+    transform: translateX(-135%) skewX(-16deg);
+  }
+
+  100% {
+    transform: translateX(135%) skewX(-16deg);
+  }
+}
+
+.status-copy {
+  max-width: 32rem;
+  margin-top: 1.35rem;
+}
+
+.status-copy__title {
+  margin: 0;
+  color: var(--app-text);
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  line-height: 1.12;
+}
+
+.status-copy__message {
+  margin: 0.8rem 0 0;
+  color: var(--app-text-muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+:host-context([data-theme='light']) .loading-brand__shimmer {
+  mix-blend-mode: multiply;
+  opacity: 0.92;
+}
+
+:host-context([data-theme='dark']) .loading-brand__shimmer {
+  mix-blend-mode: screen;
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .dev-toolbar {
+    padding: 0.75rem 0.75rem 0;
+  }
+
+  .dev-toolbar__bar {
+    width: 100%;
+  }
+
+  .status-stage {
+    padding: 1rem;
+  }
+
+  .loading-brand__logo-wrap {
+    width: min(16rem, 100%);
+  }
+
+  .status-copy {
+    margin-top: 1rem;
+  }
+}

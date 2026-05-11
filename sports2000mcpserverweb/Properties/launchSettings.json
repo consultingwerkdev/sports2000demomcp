@@ -7,7 +7,8 @@
       "launchBrowser": true,
       "applicationUrl": "http://localhost:5118",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SMARTFRAMEWORKMCP_AUTH_KEY": "rTvpPQQq8Sjq6jJ4OqcvuAYEUgfk/eLFQUeWDd+SOM/41VQtq3ROzNnc9jA91nxcLKbNOESTdk0TlDh/o4HtL6NDCH0FJ6gI9Kxj39B3BxX4P7fVvCnxJEjM/Us+SBj5"
       }
     },
     "https": {
@@ -16,7 +17,8 @@
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7269;http://localhost:5118",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SMARTFRAMEWORKMCP_AUTH_KEY": "rTvpPQQq8Sjq6jJ4OqcvuAYEUgfk/eLFQUeWDd+SOM/41VQtq3ROzNnc9jA91nxcLKbNOESTdk0TlDh/o4HtL6NDCH0FJ6gI9Kxj39B3BxX4P7fVvCnxJEjM/Us+SBj5"
       }
     }
   }

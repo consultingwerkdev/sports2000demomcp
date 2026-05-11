@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Consultingwerk.SmartMcpAuthentication
 {
@@ -51,6 +52,13 @@ namespace Consultingwerk.SmartMcpAuthentication
                 {
                     await ServeOpenIDConfiguration(context, options);
                 });
+
+                // RFC 7591: Dynamic Client Registration
+                // Some MCP OAuth clients require a registration endpoint even when the client is pre-registered.
+                endpoints.MapPost(SmartMcpConstants.Endpoints.ClientRegistration, async context =>
+                {
+                    await ServeClientRegistration(context, options);
+                });
             });
         }
 
@@ -87,25 +95,26 @@ namespace Consultingwerk.SmartMcpAuthentication
         /// </summary>
         private static async Task ServeAuthorizationServerReference(HttpContext context, SmartMcpOAuth2Options options)
         {
-            // Point to the actual authorization server (Keycloak)
-            var metadata = new
+            // Point to the actual authorization server rather than assuming a specific provider.
+            var metadata = new Dictionary<string, object?>
             {
-                issuer = options.Issuer,
-                authorization_endpoint = options.AuthorizationEndpoint,
-                token_endpoint = options.TokenEndpoint,
-                jwks_uri = options.JwksUri,
-                registration_endpoint = options.GetRegistrationEndpoint(),
-                response_types_supported = new[] { "code" },
-                response_modes_supported = new[] { "query", "fragment" },
-                grant_types_supported = new[] { "authorization_code", "refresh_token" },
-                token_endpoint_auth_methods_supported = new[] { "client_secret_basic", "client_secret_post", "none" },
-                code_challenge_methods_supported = new[] { "plain", "S256" },
-                scopes_supported = options.Scopes,
-                resource_indicators_supported = true,
-                resource = options.Audience,
-                revocation_endpoint = options.TokenEndpoint,
-                authorization_server_metadata = $"{options.Issuer}/.well-known/openid-configuration"
+                ["issuer"] = options.Issuer,
+                ["authorization_endpoint"] = options.AuthorizationEndpoint,
+                ["token_endpoint"] = options.TokenEndpoint,
+                ["jwks_uri"] = options.JwksUri,
+                ["response_types_supported"] = new[] { "code" },
+                ["response_modes_supported"] = new[] { "query", "fragment" },
+                ["grant_types_supported"] = new[] { "authorization_code", "refresh_token" },
+                ["token_endpoint_auth_methods_supported"] = new[] { "client_secret_basic", "client_secret_post", "none" },
+                ["code_challenge_methods_supported"] = new[] { "plain", "S256" },
+                ["scopes_supported"] = options.Scopes,
+                ["resource_indicators_supported"] = true,
+                ["resource"] = options.Audience,
+                ["revocation_endpoint"] = options.TokenEndpoint,
+                ["authorization_server_metadata"] = $"{options.Issuer}/.well-known/openid-configuration"
             };
+
+            metadata["registration_endpoint"] = GetEffectiveRegistrationEndpoint(context, options);
 
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(JsonSerializer.Serialize(metadata, s_jsonOptions));
@@ -119,31 +128,90 @@ namespace Consultingwerk.SmartMcpAuthentication
         /// </summary>
         private static async Task ServeOpenIDConfiguration(HttpContext context, SmartMcpOAuth2Options options)
         {   
-            // Redirect to Keycloak's actual OIDC configuration
-            var metadata = new
+            // Provide a provider-agnostic OIDC metadata document with optional registration support.
+            var metadata = new Dictionary<string, object?>
             {
-                issuer = options.Issuer,
-                authorization_endpoint = options.AuthorizationEndpoint,
-                token_endpoint = options.TokenEndpoint,
-                jwks_uri = options.JwksUri,
-                registration_endpoint = options.GetRegistrationEndpoint(),
-                response_types_supported = new[] { "code" },
-                response_modes_supported = new[] { "query", "fragment" },
-                grant_types_supported = new[] { "authorization_code", "refresh_token" },
-                subject_types_supported = new[] { "public" },
-                id_token_signing_alg_values_supported = new[] { "RS256" },
-                scopes_supported = options.Scopes,
-                token_endpoint_auth_methods_supported = new[] { "client_secret_basic", "client_secret_post", "none" },
-                // RFC 7636: PKCE support
-                code_challenge_methods_supported = new[] { "plain", "S256" },
-                claims_supported = new[] { "sub", "iss", "aud", "exp", "iat", "auth_time", "name", "email" },
-                revocation_endpoint = options.TokenEndpoint,
-                // Note: This is a proxy/reference. For full OIDC metadata, query Keycloak directly
-                full_metadata_endpoint = $"{options.Issuer}/.well-known/openid-configuration"
+                ["issuer"] = options.Issuer,
+                ["authorization_endpoint"] = options.AuthorizationEndpoint,
+                ["token_endpoint"] = options.TokenEndpoint,
+                ["jwks_uri"] = options.JwksUri,
+                ["response_types_supported"] = new[] { "code" },
+                ["response_modes_supported"] = new[] { "query", "fragment" },
+                ["grant_types_supported"] = new[] { "authorization_code", "refresh_token" },
+                ["subject_types_supported"] = new[] { "public" },
+                ["id_token_signing_alg_values_supported"] = new[] { "RS256" },
+                ["scopes_supported"] = options.Scopes,
+                ["token_endpoint_auth_methods_supported"] = new[] { "client_secret_basic", "client_secret_post", "none" },
+                ["code_challenge_methods_supported"] = new[] { "plain", "S256" },
+                ["claims_supported"] = new[] { "sub", "iss", "aud", "exp", "iat", "auth_time", "name", "email" },
+                ["revocation_endpoint"] = options.TokenEndpoint,
+                ["full_metadata_endpoint"] = $"{options.Issuer}/.well-known/openid-configuration"
             };
+
+            metadata["registration_endpoint"] = GetEffectiveRegistrationEndpoint(context, options);
 
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(JsonSerializer.Serialize(metadata, s_jsonOptions));
+        }
+
+        /// <summary>
+        /// Serves a lightweight dynamic client registration response for pre-registered clients.
+        /// </summary>
+        private static async Task ServeClientRegistration(HttpContext context, SmartMcpOAuth2Options options)
+        {
+            JsonObject requestMetadata;
+
+            try
+            {
+                requestMetadata = await JsonNode.ParseAsync(context.Request.Body) as JsonObject ?? new JsonObject();
+            }
+            catch (JsonException)
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(JsonSerializer.Serialize(new
+                {
+                    error = "invalid_client_metadata",
+                    error_description = "The client metadata payload must be valid JSON."
+                }, s_jsonOptions));
+                return;
+            }
+
+            var response = new JsonObject
+            {
+                ["client_id"] = options.ClientId,
+                ["client_id_issued_at"] = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+            };
+
+            if (!string.IsNullOrWhiteSpace(options.ClientSecret))
+            {
+                response["client_secret"] = options.ClientSecret;
+                response["client_secret_expires_at"] = 0;
+            }
+
+            foreach (var pair in requestMetadata)
+            {
+                response[pair.Key] = pair.Value?.DeepClone();
+            }
+
+            response["client_id"] = options.ClientId;
+            response["token_endpoint_auth_method"] = !string.IsNullOrWhiteSpace(options.ClientSecret) ? "client_secret_post" : "none";
+
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(response.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        }
+
+        /// <summary>
+        /// Gets the registration endpoint advertised to clients.
+        /// </summary>
+        private static string GetEffectiveRegistrationEndpoint(HttpContext context, SmartMcpOAuth2Options options)
+        {
+            if (!string.IsNullOrWhiteSpace(options.GetRegistrationEndpoint()))
+            {
+                return options.GetRegistrationEndpoint()!;
+            }
+
+            return $"{context.Request.Scheme}://{context.Request.Host}{SmartMcpConstants.Endpoints.ClientRegistration}";
         }
     }
 }
