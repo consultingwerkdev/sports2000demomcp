@@ -1,7 +1,7 @@
 
 /*
 **
-**    Created by PROGRESS ProxyGen (Progress Version 12.8) Thu Dec 04 12:15:23 CET 2025
+**    Created by PROGRESS ProxyGen (Progress Version 12.8) Thu Nov 12 16:05:15 CET 2026
 **
 */
 
@@ -179,7 +179,7 @@ out string pcResponse)
 		
 
 		// Run procedure
-		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/create-customer-order.p", parms);
+		rqCtx = runProcedure("Sports2000Backend/Sports2000McpServer/create-customer-order.p", parms);
 
 
 		// Get output parameters
@@ -229,7 +229,7 @@ out string pcResponse)
 		
 
 		// Run procedure
-		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/get-customer-details.p", parms);
+		rqCtx = runProcedure("Sports2000Backend/Sports2000McpServer/get-customer-details.p", parms);
 
 
 		// Get output parameters
@@ -278,7 +278,7 @@ out string pcResponse)
 		
 
 		// Run procedure
-		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/get-customer-orders.p", parms);
+		rqCtx = runProcedure("Sports2000Backend/Sports2000McpServer/get-customer-orders.p", parms);
 
 
 		// Get output parameters
@@ -327,7 +327,7 @@ out string pcResponse)
 		
 
 		// Run procedure
-		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/get-item-details.p", parms);
+		rqCtx = runProcedure("Sports2000Backend/Sports2000McpServer/get-item-details.p", parms);
 
 
 		// Get output parameters
@@ -375,7 +375,7 @@ out string pcResponse)
 		
 
 		// Run procedure
-		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/get-user-profile.p", parms);
+		rqCtx = runProcedure("Sports2000Backend/Sports2000McpServer/get-user-profile.p", parms);
 
 
 		// Get output parameters
@@ -425,7 +425,7 @@ out string pcResponse)
 		
 
 		// Run procedure
-		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/open_customer_form.p", parms);
+		rqCtx = runProcedure("Sports2000Backend/Sports2000McpServer/open_customer_form.p", parms);
 
 
 		// Get output parameters
@@ -474,7 +474,7 @@ out string pcResponse)
 		
 
 		// Run procedure
-		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/query-customers.p", parms);
+		rqCtx = runProcedure("Sports2000Backend/Sports2000McpServer/query-customers.p", parms);
 
 
 		// Get output parameters
@@ -534,7 +534,7 @@ string pcPhone, string pcEmailAddress, out string pcResponse)
 		
 
 		// Run procedure
-		rqCtx = runProcedure("Consultingwerk/SmartComponentsDemo/Sports2000McpServer/update-customer-details.p", parms);
+		rqCtx = runProcedure("Sports2000Backend/Sports2000McpServer/update-customer-details.p", parms);
 
 
 		// Get output parameters
