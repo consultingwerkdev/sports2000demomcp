@@ -71,7 +71,7 @@
     <WriteDatasetBeforeImage>false</WriteDatasetBeforeImage>
     <Procedure isPersistent="false" useFullName="false">
       <Name>create-customer-order</Name>
-      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProcPath>Sports2000Backend\Sports2000McpServer\</ProcPath>
       <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
       <ProcExt>p</ProcExt>
       <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
@@ -111,7 +111,7 @@
     </Procedure>
     <Procedure isPersistent="false" useFullName="false">
       <Name>get-customer-details</Name>
-      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProcPath>Sports2000Backend\Sports2000McpServer\</ProcPath>
       <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
       <ProcExt>p</ProcExt>
       <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
@@ -141,7 +141,7 @@
     </Procedure>
     <Procedure isPersistent="false" useFullName="false">
       <Name>get-customer-orders</Name>
-      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProcPath>Sports2000Backend\Sports2000McpServer\</ProcPath>
       <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
       <ProcExt>p</ProcExt>
       <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
@@ -171,7 +171,7 @@
     </Procedure>
     <Procedure isPersistent="false" useFullName="false">
       <Name>get-item-details</Name>
-      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProcPath>Sports2000Backend\Sports2000McpServer\</ProcPath>
       <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
       <ProcExt>p</ProcExt>
       <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
@@ -201,7 +201,7 @@
     </Procedure>
     <Procedure isPersistent="false" useFullName="false">
       <Name>get-user-profile</Name>
-      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProcPath>Sports2000Backend\Sports2000McpServer\</ProcPath>
       <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
       <ProcExt>p</ProcExt>
       <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
@@ -231,7 +231,7 @@
     </Procedure>
     <Procedure isPersistent="false" useFullName="false">
       <Name>open_customer_form</Name>
-      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProcPath>Sports2000Backend\Sports2000McpServer\</ProcPath>
       <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
       <ProcExt>p</ProcExt>
       <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
@@ -261,7 +261,7 @@
     </Procedure>
     <Procedure isPersistent="false" useFullName="false">
       <Name>query-customers</Name>
-      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProcPath>Sports2000Backend\Sports2000McpServer\</ProcPath>
       <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
       <ProcExt>p</ProcExt>
       <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
@@ -289,7 +289,7 @@
     </Procedure>
     <Procedure isPersistent="false" useFullName="false">
       <Name>update-customer-details</Name>
-      <ProcPath>Consultingwerk\SmartComponentsDemo\Sports2000McpServer\</ProcPath>
+      <ProcPath>Sports2000Backend\Sports2000McpServer\</ProcPath>
       <ProPath>c:\Work_STREAM\SmartComponentLibrary\SmartComponentLibraryDev\ABL\</ProPath>
       <ProcExt>p</ProcExt>
       <ProcDetail isCustomized="true" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true">
